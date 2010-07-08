@@ -53,12 +53,16 @@ describe GitTopic do
     `git rev-parse HEAD`.chomp
   end
 
+  def git_config( key )
+    `git config #{key}`.chomp
+  end
+
   def git_branch_merge
-    `git config branch.#{git_branch}.merge`.chomp
+    git_config "branch.#{git_branch}.merge"
   end
 
   def git_branch_remote
-    `git config branch.#{git_branch}.remote`.chomp
+    git_config "branch.#{git_branch}.remote"
   end
 
   def git_branches
@@ -86,11 +90,14 @@ describe GitTopic do
 
       it "
        should create (and switch to) a new branch with a name that matches the
-       given topic, in the wip namespace
+       given topic, in the wip namespace.  A remote tracking branch should also
+       be set up.
       ".oneline do
 
         GitTopic.work_on( 'topic' )
-        git_branch.should       == "wip/#{@user}/topic"
+        git_branch.should               == "wip/#{@user}/topic"
+        git_branch_remote.should        == 'origin'
+        git_branch_merge.should         == "refs/heads/wip/#{@user}/topic"
       end
 
       it "should fail if no topic is given" do
@@ -111,12 +118,20 @@ describe GitTopic do
 
         git_branch.should   == "wip/#{@user}/zombie-basic"
       end
-    end
 
-    # TODO 1: pending
-    pending "existing remote wip branch" do
-    end
+      it "
+        should use (and then destroy) the rejected branch for the topic, if one
+        exists
+      ".oneline do
 
+        git_remote_branches.should        include( "rejected/#{@user}/krakens" )
+        GitTopic.work_on    'krakens'
+        git_branch.should                 == "wip/#{@user}/krakens"
+        git_remote_branches.should_not    include( "rejected/#{@user}/krakens" )
+        git_remote_branches.should        include( "wip/#{@user}/krakens" )
+        git_head.should                   == '44ffd9c9c8b52b201659e3ad318cdad6ec836b46'
+      end
+    end
   end
 
 
@@ -154,6 +169,7 @@ describe GitTopic do
          
           git_branches.should_not         include( "wip/#{@user}/zombie-basic" )
           git_remote_branches.should      include( "review/#{@user}/zombie-basic" )
+          git_remote_branches.should_not  include( "wip/#{@user}/zombie-basic" )
           git_branch.should               == 'master'
         end
       end
@@ -175,9 +191,9 @@ describe GitTopic do
         GitTopic.status
         @output.should_not      be_nil
 
-        @output.should_not      =~ /^\s*pirates\s*$/m
-        @output.should          =~ /^\s*ninja-basic\s*$/m
-        @output.should          =~ /^\s*zombie-basic\s*$/m
+        @output.should_not      =~ /^#\s*pirates\s*$/m
+        @output.should          =~ /^#\s*ninja-basic\s*$/m
+        @output.should          =~ /^#\s*zombie-basic\s*$/m
       end
 
       it "should show my rejected topics" do
@@ -185,14 +201,21 @@ describe GitTopic do
         GitTopic.status
         @output.should_not      be_nil
 
-        @output.should          =~ /^\s*krakens\s*$/m
+        @output.should          =~ /^#\s*krakens\s*$/m
       end
 
     end
 
-    # TODO 1: pending
-    pending "--appended (to include git status)"
+    describe "passed the --prepended flag" do
+      before( :each ) { Dir.chdir 'in-progress' }
+      after( :each )  { Dir.chdir '..' }
 
+      it "should invoke git status before producing its output" do
+        GitTopic.status( :prepended => true )
+        @output.should_not      be_nil
+        @output.should          =~ /# On branch master/
+      end
+    end
   end
 
   describe "#review" do
@@ -336,5 +359,20 @@ describe GitTopic do
     end
   end
 
+
+  describe "#install_aliases" do
+    it "should install aliases" do
+      GitTopic.install_aliases  :local => true
+      git_config( 'alias.work-on' ).should    == 'topic work-on'
+      git_config( 'alias.done' ).should       == 'topic done'
+      git_config( 'alias.review' ).should     == 'topic review'
+      git_config( 'alias.accept' ).should     == 'topic accept'
+      git_config( 'alias.reject' ).should     == 'topic reject'
+
+      git_config( 'alias.w' ).should          == 'topic work-on'
+      git_config( 'alias.r' ).should          == 'topic review'
+      git_config( 'alias.st' ).should         == 'topic status --prepended'
+    end
+  end
 end
 

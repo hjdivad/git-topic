@@ -4,16 +4,34 @@ require 'rake'
 Dir[ 'lib/tasks/**/*' ].each{ |l| require l }
 
 
-# TODO 2: git topic install-aliases
-# TODO 1: deploy to github
-# TODO 2: depoy to gemcutter?
 begin
   require 'jeweler'
   Jeweler::Tasks.new do |gem|
     gem.name = "git-topic"
     gem.summary = %Q{git command around reviewed topic branches}
-    # TODO 1: longer description of gem
-    gem.description = %Q{gem command around reviewed topic branches}
+    gem.description = %Q{
+      gem command around reviewed topic branches.  Supports workflow of the form:
+
+      # alexander:
+      git work-on <topic>
+      git done
+
+      # bismarck:
+      git status    # notice a review branch
+      git review <topic>
+      # happy, merge into master, push and cleanup
+      git accept
+
+      git review <topic2>
+      # unhappy
+      git reject
+
+      # alexander:
+      git status    # notice rejected topic
+      git work-on <topic>
+
+      see README.rdoc for more (any) details.
+    }
     gem.email = "git-topic@hjdivad.com"
     gem.homepage = "http://github.com/hjdivad/git-topic"
     gem.authors = ["David J. Hamilton"]
@@ -37,7 +55,8 @@ begin
   require 'yard'
   YARD::Rake::YardocTask.new
 rescue LoadError
-  task :yardoc do
+  desc "Try (and fail) to run yardoc to get an error message."
+  task :yard do
     abort "YARD is not available. In order to run yardoc, you must: sudo gem install yard"
   end
 end

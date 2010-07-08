@@ -1,7 +1,7 @@
 = git-topic
 
-git-topic is a git command to help with a particular kind of workflow, described
-below.
+git-topic is a git command to help with a particular kind of workflow, in which
+all work is written by an author, and reviewed by someone else.
 
 == Workflow in brief
 
@@ -134,17 +134,59 @@ appropriate, you can either:
     # unhappy with the review, push it to rejected
     git topic reject
 
+== Again, but with aliases
+
+    # first install aliases
+    #   add --local if you don't want to update your global aliases
+    git topic install-aliases
+
+    # alternatively
+    #   git w <topic>
+    git work-on <topic>
+
+    git done
+
+
+    # does status --prepend so you get git status output as well as git topic
+    # status
+    git st
+
+    # alternatively
+    #   git r <topic>
+    git review <topic>
+
+    git accept
+    # or
+    git reject
+
+==  Misc
+
+At present the binary is stupidly slow.  Actually, the binary is not slow, but
+all rubygems binaries are slow.  See ruby issue 3465[1].  One way around this is
+to modify yor PATH so you invoke the binary directly (instead of the rubygem
+wrapper).  Alternatively, put up with a 300ms load time until you have a ruby
+with the issue fixed.
+
+==  Obvious Features Missing
+
+1.  shell autocomplete
+
 
 == Note on Patches/Pull Requests
- 
-* Fork the project.
-* Make your feature addition or bug fix.
-* Add tests for it. This is important so I don't break it in a
-  future version unintentionally.
-* Commit, do not mess with rakefile, version, or history.
-  (if you want to have your own version, that is fine but bump version in a commit by itself I can ignore when I pull)
-* Send me a pull request. Bonus points for topic branches.
+
+1.  Fork the project.
+2.  Make your feature addition or bug fix.
+3.  Add tests for it. This is important so I don't break it in a
+    future version unintentionally.
+4.  Commit, do not mess with rakefile, version, or history.  (if you want to
+    have your own version, that is fine but bump version in a commit by itself I
+    can ignore when I pull)
+5.  Send me a pull request. Bonus points for topic branches.
 
 == Copyright
 
 Copyright (c) 2010 David J. Hamilton. See LICENSE for details.
+
+== References
+
+[1] http://redmine.ruby-lang.org/issues/show/3465

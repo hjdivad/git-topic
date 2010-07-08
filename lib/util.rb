@@ -1,7 +1,9 @@
 # encoding: utf-8
 
 require 'active_support'
-require 'active_support/core_ext'
+require 'active_support/inflector'
+require 'active_support/core_ext/module/aliasing'
+require 'active_support/core_ext/string/inflections'
 
 
 class String
