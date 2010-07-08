@@ -4,6 +4,7 @@ source :gemcutter
 
 gem 'activesupport'
 gem 'trollop'
+gem 'gemcutter'
 
 group :development do
   gem 'jeweler'
