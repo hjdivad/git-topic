@@ -1,6 +1,139 @@
-= TODO 1: GEMNAME
+= git-topic
 
-Description goes here.
+git-topic is a git command to help with a particular kind of workflow, described
+below.
+
+== Workflow in brief
+
+=== Doing Work
+
+1.      Create a topic branch in the wip namespace.
+2.      Do some work.
+3.      Rebase to create a nice commit history.
+4.      Push to the review namespace.  If the wip branch was pushed (e.g.
+        because you work on multiple machines) destroy it on the remote.
+
+1.      Create a local branch from a rejected branch.
+2.      Do some work, resolve the reviewer's issues.
+3.      go to step 3, above.
+
+=== Reviewing
+
+1.          Create a local branch from a review branch somebody else pushed.
+2.          Review their work.
+3.  a.i.    Accept; merge (fast-forward) master
+    ii.     Destroy the review branch. 
+    b.      Reject; add notes and push to the rejected namespace and remove from
+            the review namespace.
+
+
+== Workflow without git-topic
+
+=== Working on a topic (e.g. feature, or bugfix) foo
+
+    # Create a new branch and switch to it.
+    git checkout -b wip/hal/foo
+
+    # do some work, create lots of temporary commits
+    # when ready to get the code into master, first update so we're rebasing against
+    # the latest code
+    git fetch origin
+
+    # rebase against latest code
+    git rebase --interactive origin/master
+
+    # when done rebasing so wip/hal/foo now has a nice clean commit history, push to
+    # a review branch and destroy the remote wip branch
+    git push origin wip/hal/foo:review/hal/foo  :wip/hal/foo
+
+    # alternatively if you never pushed your wip branch to the remote there's no
+    # need to destroy it, instead only push your local wip branch as a review branch
+    #
+    # git push origin wip/hal/foo:review/hal/foo
+
+
+    # later, after your changes have been merged into master, you can delete your
+    # local branch
+    #
+    # git checkout master
+    # git branch -d wip/hal/foo
+
+
+
+=== Reviewing a  topic (no proposed changes)
+
+    # update origin
+    git fetch origin
+
+    # notice there's a review branch
+    git branch -r
+
+    # create a local branch that tracks the remote review branch
+    git checkout -b review/djh/bar origin/review/djh/bar
+
+    # examine code and examine the local (proposed) commits
+    git log master..
+
+    # when done reviewing, merge into master
+    git checkout master
+    # This should be a fast-forward merge.  If not, it's because something has been
+    # added to master since the rebase
+    git merge review/djh/bar
+    git branch -d review/djh/bar
+
+    # update the new master and destroy the old review branch
+    git push origin master :review/djh/bar
+
+
+
+=== Reviewing a topc (proposed changes)
+
+As above, but if, after examining the code you feel some changes are
+appropriate, you can either:
+
+1.  do them yourself and have the other person review and merge
+
+    # do some changes, then destroy the old review branch and make a new one
+    # with the cleaned up code.  Now the owner is changed from djh to hal, so
+    # djh must review and merge into master
+    git push origin review/djh/bar:review/hal/bar :review/djh/bar
+
+2.  do some (or no) changes, but with some TODOs for the original author.
+
+    # do your changes on review/djh/bar
+
+    # then update the remote, moving the branch to rejected, indicating the
+    # author has some TODOs left.
+    git push origin review/djh/bar:rejected/djh/bar :review/djh/bar
+
+    # when the author has resolved the TODOs they will move the branch back to
+    # review/djh/bar
+
+
+== Workflow with git-topic
+
+=== Doing Work
+
+    # Work on a (possibly new, possibly rejected) topic
+    git topic work-on <topic>
+
+    # done with topic; push it for someone to review
+    git topic done [<topic>]
+
+
+=== Reviewing
+
+    # see if we have any topics to review (or rejected topics to fix up)
+    git topic status
+
+    git topic review [<topic>]
+
+    # happy with the review, get it into master
+    git topic accept
+
+    # unhappy with the review, push it to rejected
+    git topic reject
+
 
 == Note on Patches/Pull Requests
  

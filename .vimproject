@@ -1,4 +1,17 @@
 project=$PWD cd=. {
+ History.txt
+ LICENSE
+ README.rdoc
+ README.txt
+ Rakefile
+ lib=lib {
+  git-topic.rb
+  util.rb
+ }
+ spec=spec {
+  git-topic_spec.rb
+  spec_helper.rb
+ }
 }
 
 

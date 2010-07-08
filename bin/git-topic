@@ -1,0 +1,70 @@
+#!/usr/bin/env ruby
+# encoding: utf-8
+
+require 'trollop'
+require 'git-topic'
+
+
+module GitTopic
+  SubCommands = %w(work-on done status review accept reject)
+
+  class << self
+    def run
+      global_opts = Trollop::options do
+        banner "
+          Manage a topic/review workflow.
+
+          Commands are:
+            #{SubCommands.join( "
+            " )}
+
+            Global Options:
+        ".cleanup
+
+        opt :verbose,   "Verbose output, including complete traces on errors."
+        stop_on     SubCommands
+      end
+
+      # TODO 2: banners
+      cmd       = ARGV.shift
+      cmd_opts  = Trollop::options do
+        case cmd
+        when "work-on"
+        when /done(-with)?/
+        when "status"
+        when "review"
+        when "accept"
+        when "reject"
+        end
+      end
+
+      opts = global_opts.merge( cmd_opts )
+      case cmd
+      when "work-on"
+        topic       = ARGV.shift
+        work_on     topic, opts
+      when /done(-with)?/
+        topic       = ARGV.shift
+        done        topic, opts
+      when "status"
+        status      opts
+      when "review"
+        spec        = ARGV.shift
+        review      spec, opts
+      when "accept"
+        topic       = ARGV.shift
+        accept      topic, opts
+      when "reject"
+        topic       = ARGV.shift
+        reject      topic, opts
+      end
+    rescue => error
+      puts "Error: #{error.message}"
+      puts error.backtrace.join( "\n" ) if opts[:verbose]
+    end
+  end
+end
+
+
+GitTopic::run
+

@@ -4,14 +4,18 @@ require 'rake'
 Dir[ 'lib/tasks/**/*' ].each{ |l| require l }
 
 
+# TODO 2: git topic install-aliases
+# TODO 1: deploy to github
+# TODO 2: depoy to gemcutter?
 begin
   require 'jeweler'
   Jeweler::Tasks.new do |gem|
-    gem.name = "TODO: GEMNAME"
-    gem.summary = %Q{TODO: one-line summary of your gem}
-    gem.description = %Q{TODO: longer description of your gem}
-    gem.email = "TODO: GEMNAME@hjdivad.com"
-    gem.homepage = "http://github.com/hjdivad/TODO: GEMNAME"
+    gem.name = "git-topic"
+    gem.summary = %Q{git command around reviewed topic branches}
+    # TODO 1: longer description of gem
+    gem.description = %Q{gem command around reviewed topic branches}
+    gem.email = "git-topic@hjdivad.com"
+    gem.homepage = "http://github.com/hjdivad/git-topic"
     gem.authors = ["David J. Hamilton"]
     gem.add_development_dependency "rspec", ">= 1.2.9"
     gem.add_development_dependency "yard", ">= 0"
@@ -23,32 +27,11 @@ rescue LoadError
   puts "Jeweler (or a dependency) not available. Install it with: gem install jeweler"
 end
 
-require 'spec/rake/spectask'
-Spec::Rake::SpecTask.new(:spec) do |spec|
-  spec.libs << 'lib' << 'spec'
-  spec.spec_files = FileList['spec/**/*_spec.rb']
+desc "Run all specs."
+task :spec do
+  sh "bundle exec rspec spec"
 end
 
-Spec::Rake::SpecTask.new(:rcov) do |spec|
-  spec.libs << 'lib' << 'spec'
-  spec.pattern = 'spec/**/*_spec.rb'
-  spec.rcov = true
-end
-
-task :spec => :check_dependencies
-
-begin
-  require 'cucumber/rake/task'
-  Cucumber::Rake::Task.new(:features)
-
-  task :features => :check_dependencies
-rescue LoadError
-  task :features do
-    abort "Cucumber is not available. In order to run features, you must: sudo gem install cucumber"
-  end
-end
-
-task :default => :spec
 
 begin
   require 'yard'
