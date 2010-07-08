@@ -5,19 +5,40 @@
 
 Gem::Specification.new do |s|
   s.name = %q{git-topic}
-  s.version = "0.0.0"
+  s.version = "0.1.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["David J. Hamilton"]
-  s.date = %q{2010-07-07}
+  s.date = %q{2010-07-08}
   s.default_executable = %q{git-topic}
-  s.description = %q{gem command around reviewed topic branches}
+  s.description = %q{
+      gem command around reviewed topic branches.  Supports workflow of the form:
+
+      # alexander:
+      git work-on <topic>
+      git done
+
+      # bismarck:
+      git status    # notice a review branch
+      git review <topic>
+      # happy, merge into master, push and cleanup
+      git accept
+
+      git review <topic2>
+      # unhappy
+      git reject
+
+      # alexander:
+      git status    # notice rejected topic
+      git work-on <topic>
+
+      see README.rdoc for more (any) details.
+    }
   s.email = %q{git-topic@hjdivad.com}
   s.executables = ["git-topic"]
   s.extra_rdoc_files = [
     "LICENSE",
-     "README.rdoc",
-     "README.txt"
+     "README.rdoc"
   ]
   s.files = [
     ".gitignore",
@@ -31,13 +52,10 @@ Gem::Specification.new do |s|
      "History.txt",
      "LICENSE",
      "README.rdoc",
-     "README.txt",
      "Rakefile",
      "VERSION",
      "autotest/discover.rb",
      "bin/git-topic",
-     "features/project.feature",
-     "features/support/env.rb",
      "git-topic.gemspec",
      "lib/git-topic.rb",
      "lib/util.rb",
