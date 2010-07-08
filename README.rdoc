@@ -189,4 +189,4 @@ Copyright (c) 2010 David J. Hamilton. See LICENSE for details.
 
 == References
 
-[1] http://redmine.ruby-lang.org/issues/show/3465
+1. http://redmine.ruby-lang.org/issues/show/3465
