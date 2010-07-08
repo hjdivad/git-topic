@@ -16,6 +16,15 @@ module GitTopic
       end
       alias_method_chain m.to_sym, :nocache
     end
+
+    def git_with_implicit_capture( cmds=[], opts={} )
+      if opts[:show]
+        puts capture_git( cmds )
+      else
+        git_without_implicit_capture( cmds, opts )
+      end
+    end
+    alias_method_chain  :git, :implicit_capture
   end
 end
 

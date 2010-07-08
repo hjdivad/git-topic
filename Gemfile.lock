@@ -1,6 +1,8 @@
 GEM
+  remote: http://rubygems.org/
   specs:
     ZenTest (4.3.3)
+    activesupport (2.3.8)
     diff-lcs (1.1.2)
     gemcutter (0.5.0)
       json_pure
@@ -21,12 +23,15 @@ GEM
     rspec-mocks (2.0.0.beta.16)
     rubyforge (2.0.4)
       json_pure (>= 1.1.7)
+    trollop (1.16.2)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
   ZenTest
+  activesupport
   jeweler
   rake
   rspec (>= 2.0.0.beta.16)
+  trollop

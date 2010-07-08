@@ -1,11 +1,18 @@
 # encoding: utf-8
-# vim :ft=ruby:
 
-gem 'active_support'
+source :gemcutter
+
+gem 'activesupport'
+gem 'trollop'
 
 group :development do
   gem 'jeweler'
   gem 'rake'
   gem 'rspec',  '>= 2.0.0.beta.16'
   gem 'ZenTest'
+  gem 'yard'
 end
+
+
+
+# vim:ft=ruby:

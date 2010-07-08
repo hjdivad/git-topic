@@ -2,19 +2,36 @@
 # encoding: utf-8
 
 require 'active_support'
-require 'active_support/core_ext'
+require 'active_support/core_ext/hash/keys'
 
 require 'util'
 
 
 module GitTopic
+  GlobalOptKeys = [ :verbose, :help, :verbose_given ]
+
   class << self
 
     # Switch to a branch for the given topic.
     def work_on( topic, opts={} )
       raise "Topic must be specified" if topic.nil?
 
-      git [ switch_to_branch( wip_branch( topic ))]
+      # setup a remote branch, if necessary
+      wb = wip_branch( topic )
+      git(
+        "push origin HEAD:#{wb}"
+      ) unless remote_branches.include? "origin/#{wb}"
+      # switch to the new branch
+      git [ switch_to_branch( wb, "origin/#{wb}" )]
+     
+      # Check for rejected branch
+      rej_branch = rejected_branch( topic )
+      if remote_branches.include? "origin/#{rej_branch}"
+        git [
+          "reset --hard origin/#{rej_branch}",
+          "push origin :#{rej_branch} HEAD:#{wb}",
+        ]
+      end
     end
 
     # Done with the given topic.  If none is specified, then topic is assumed to
@@ -29,8 +46,10 @@ module GitTopic
 
       topic = current_topic if topic.nil?
 
+      wb = wip_branch( topic )
+      rb = review_branch( topic )
       git [
-        "push origin #{wip_branch( topic )}:#{review_branch( topic )}",
+        "push origin #{wb}:#{rb} :#{wb}",
         "checkout master",
         "branch -D #{wip_branch( topic )}"
       ]
@@ -51,6 +70,8 @@ module GitTopic
     #   #   dragons
     #   #   liches
     def status( opts={} )
+      opts.assert_valid_keys  :prepended, :prepended_given, *GlobalOptKeys
+
       sb = ''
       rb = remote_branches_organized
       review_ut   = rb[:review]
@@ -58,7 +79,7 @@ module GitTopic
 
       unless review_ut.empty?
         prep = review_ut.size == 1 ? "is 1" : "are #{review_ut.size}"
-        sb << "\nThere #{prep} #{'topic'.pluralize( review_ut.size )} you can review.\n\n"
+        sb << "# There #{prep} #{'topic'.pluralize( review_ut.size )} you can review.\n\n"
 
         sb << review_ut.map do |user, topics|
           sb2 = "  from #{user}:\n"
@@ -67,15 +88,22 @@ module GitTopic
         end.join( "\n" )
       end
 
-      rejected_topics = rejected_ut[ user ]
+      rejected_topics = rejected_ut[ user ] || []
       unless rejected_topics.empty?
+        sb << "\n" unless review_ut.empty?
         verb = rejected_topics.size  == 1 ? 'is' : 'are'
-        sb << "\n#{rejected_topics.size} of your topics #{verb} rejected.\n  "
-        sb << rejected_topics.join( "\n  " )
+        sb << "\n#{rejected_topics.size} of your topics #{verb} rejected.\n    "
+        sb << rejected_topics.join( "\n    " )
       end
 
+      sb.gsub! "\n", "\n# "
       sb << "\n" unless sb.empty?
       print sb
+
+      if opts[ :prepended ]
+        print "#\n" unless sb.empty?
+        git "status", :show => true
+      end
     end
 
     # Switch to a review branch to check somebody else's code.
@@ -154,6 +182,24 @@ module GitTopic
       ]
     end
 
+    def install_aliases( opts={} )
+      opts.assert_valid_keys  :local, :local_given, *GlobalOptKeys
+
+      flags = "--global" unless opts[:local]
+
+      git [
+        "config #{flags} alias.work-on  'topic work-on'",
+        "config #{flags} alias.done     'topic done'",
+        "config #{flags} alias.review   'topic review'",
+        "config #{flags} alias.accept   'topic accept'",
+        "config #{flags} alias.reject   'topic reject'",
+
+        "config #{flags} alias.w        'topic work-on'",
+        "config #{flags} alias.r        'topic review'",
+        "config #{flags} alias.st       'topic status --prepended'",
+      ]
+    end
+
 
     private
 
@@ -164,6 +210,10 @@ module GitTopic
 
     def wip_branch( topic )
       "wip/#{user}/#{topic}"
+    end
+
+    def rejected_branch( topic )
+      "rejected/#{user}/#{topic}"
     end
 
     def review_branch( topic, user=user )
@@ -290,20 +340,28 @@ module GitTopic
       @@display_git_output ||= false
     end
 
+    def display_git_output!
+      @@display_git_output = true
+    end
+
 
     def switch_to_branch( branch, tracking=nil )
       if branches.include?( branch )
-        # TODO 3: setup tracking
         "checkout #{branch}"
       else
         "checkout -b #{branch} #{tracking}"
       end
     end
 
+    def cmd_redirect_suffix( opts )
+      if !opts[:show] && !display_git_output?
+        "> /dev/null 2> /dev/null"
+      end
+    end
 
-    def git( cmds=[] )
-      cmds = [cmds] if cmds.is_a? String
-      redir = "> /dev/null 2> /dev/null" unless display_git_output?
+    def git( cmds=[], opts={} )
+      cmds  = [cmds] if cmds.is_a? String
+      redir = cmd_redirect_suffix( opts )
       system cmds.map{|c| "git #{c} #{redir}"}.join( " && " )
     end
 

@@ -4,6 +4,9 @@ project=$PWD cd=. {
  README.rdoc
  README.txt
  Rakefile
+ bin=bin {
+  git-topic
+ }
  lib=lib {
   git-topic.rb
   util.rb
