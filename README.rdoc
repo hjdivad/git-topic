@@ -91,14 +91,14 @@ all work is written by an author, and reviewed by someone else.
 As above, but if, after examining the code you feel some changes are
 appropriate, you can either:
 
-1.  do them yourself and have the other person review and merge
+==== do them yourself and have the other person review and merge
 
     # do some changes, then destroy the old review branch and make a new one
     # with the cleaned up code.  Now the owner is changed from djh to hal, so
     # djh must review and merge into master
     git push origin review/djh/bar:review/hal/bar :review/djh/bar
 
-2.  do some (or no) changes, but with some TODOs for the original author.
+==== do some (or no) changes, but with some TODOs for the original author.
 
     # do your changes on review/djh/bar
 
