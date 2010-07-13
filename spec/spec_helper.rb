@@ -1,31 +1,29 @@
 # encoding: utf-8
-require 'git-topic'
+require 'git_topic'
 
 
 # Disable caching on GitTopic for specs since we're calling the methods directly
 # rather than assuming atmoic invocations.
-module GitTopic
-  class << self
-    %w( current_branch remote_branches remote_branches_organized branches
-        ).each do |m|
+class << GitTopic
+  %w( current_branch remote_branches remote_branches_organized branches
+      ).each do |m|
 
-      define_method( "#{m}_with_nocache" ) do
-        rv = send( "#{m}_without_nocache" )
-        self.class_variable_set( "@@#{m}", nil )
-        rv
-      end
-      alias_method_chain m.to_sym, :nocache
+    define_method( "#{m}_with_nocache" ) do
+      rv = send( "#{m}_without_nocache" )
+      GitTopic::Naming::ClassMethods.class_variable_set( "@@#{m}", nil )
+      rv
     end
-
-    def git_with_implicit_capture( cmds=[], opts={} )
-      if opts[:show]
-        puts capture_git( cmds )
-      else
-        git_without_implicit_capture( cmds, opts )
-      end
-    end
-    alias_method_chain  :git, :implicit_capture
+    alias_method_chain m.to_sym, :nocache
   end
+
+  def git_with_implicit_capture( cmds=[], opts={} )
+    if opts[:show]
+      puts capture_git( cmds )
+    else
+      git_without_implicit_capture( cmds, opts )
+    end
+  end
+  alias_method_chain  :git, :implicit_capture
 end
 
 

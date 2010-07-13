@@ -258,6 +258,17 @@ describe GitTopic do
         git_branch_merge.should         == 'refs/heads/review/user24601/ninja-basic'
       end
 
+      it "
+        should accept only a topic arg (vice <user>/<topic>) when the topic is
+        unambiguous.
+      ".oneline do
+        git_remote_branches.should      include 'review/user24601/ninja-basic'
+        GitTopic.review( 'ninja-basic' )
+        git_branch.should               == 'review/user24601/ninja-basic'
+        git_branch_remote.should        == 'origin'
+        git_branch_merge.should         == 'refs/heads/review/user24601/ninja-basic'
+      end
+
       it "should error if an illegal topic is specified" do
         lambda{ GitTopic.review( 'fakeuser/faketopic' )}.should raise_error
       end

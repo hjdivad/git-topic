@@ -2,7 +2,7 @@
 # encoding: utf-8
 
 require 'trollop'
-require 'git-topic'
+require 'git_topic'
 
 
 module GitTopic
