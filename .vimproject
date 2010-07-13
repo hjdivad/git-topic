@@ -8,7 +8,9 @@ project=$PWD cd=. {
   git-topic
  }
  lib=lib {
-  git-topic.rb
+  git_topic=git_topic{
+  }
+  git_topic.rb
   util.rb
  }
  spec=spec {
