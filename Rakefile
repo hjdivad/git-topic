@@ -44,9 +44,17 @@ begin
     gem.email = "git-topic@hjdivad.com"
     gem.homepage = "http://github.com/hjdivad/git-topic"
     gem.authors = ["David J. Hamilton"]
-    gem.add_development_dependency "rspec", ">= 1.2.9"
-    gem.add_development_dependency "yard", ">= 0"
-    gem.add_development_dependency "cucumber", ">= 0"
+
+    if File.exists? 'Gemfile'
+      require 'bundler'
+      bundler = Bundler.load
+      bundler.dependencies_for( :runtime ).each do |dep|
+        gem.add_dependency              dep.name, dep.requirement.to_s
+      end
+      bundler.dependencies_for( :development ).each do |dep|
+        gem.add_development_dependency  dep.name, dep.requirement.to_s
+      end
+    end
     # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
   end
   Jeweler::GemcutterTasks.new
