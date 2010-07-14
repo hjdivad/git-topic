@@ -1,3 +1,5 @@
+require 'yaml'
+
 require 'rubygems'
 require 'rake'
 
@@ -60,6 +62,21 @@ begin
   Jeweler::GemcutterTasks.new
 rescue LoadError
   puts "Jeweler (or a dependency) not available. Install it with: gem install jeweler"
+end
+
+
+desc "Write out build version.  You must supply BUILD."
+task 'version:write:build' do
+  unless ENV.has_key? 'BUILD'
+    abort "Must supply BUILD=<build> to write out build version number." 
+  end
+  y = YAML::load_file( "VERSION.yml" )
+  v = {
+    :major => 0, :minor => 0, :patch => 0, :build => 0
+  }
+  v.merge!( y ) if y.is_a? Hash
+  v[ :build ] = ENV['BUILD']
+  File.open( "VERSION.yml", "w" ){|f| f.puts YAML::dump( v )}
 end
 
 desc "Run all specs."
