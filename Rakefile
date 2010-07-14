@@ -81,7 +81,9 @@ end
 
 desc "Run all specs."
 task :spec do
-  sh "bundle exec rspec spec"
+  # Jeweler messes up specs by polluting ENV
+  ENV.keys.grep( /git/i ).each{|k| ENV.delete k }
+  sh "rspec spec"
 end
 
 

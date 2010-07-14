@@ -13,6 +13,8 @@ module GitTopic
   include GitTopic::Git
   include GitTopic::Naming
 
+  GlobalOptKeys = [ :verbose, :help, :verbose_given, :version ]
+
 
   class << self
 
@@ -167,7 +169,7 @@ module GitTopic
 
       rem_review_branch   = find_remote_review_branch( topic ).gsub( %r{^origin/}, '' )
       git [
-        "push origin :#{rem_review_branch}",
+        "push origin master :#{rem_review_branch}",
         "branch -d #{local_review_branch}"
       ]
     end

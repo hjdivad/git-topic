@@ -15,7 +15,7 @@ describe GitTopic do
     FileUtils.rm_rf   './tmp'
     FileUtils.mkdir   './tmp'
 
-    %w(fresh in-progress dirty origin).each do |repo|
+    %w(fresh in-progress origin).each do |repo|
       FileUtils.cp_r "spec/template/#{repo}",   './tmp'
 
       # set template branches to their proper name (i.e. matching @user)
@@ -42,6 +42,13 @@ describe GitTopic do
 
   # helpers # {{{
 
+  def use_repo( repo )
+    Dir.chdir( repo )
+    # Exit if e.g. GIT_DIR is set
+    raise "Spec error" unless `git rev-parse --git-dir`.chomp == '.git'
+  end
+
+
   def git_branch
     all_branches    = `git branch --no-color`.split( "\n" )
     current_branch  = all_branches.find{|b| b =~ /^\*/}
@@ -51,6 +58,10 @@ describe GitTopic do
 
   def git_head
     `git rev-parse HEAD`.chomp
+  end
+
+  def git_origin_master
+    `git rev-parse origin/master`.chomp
   end
 
   def git_config( key )
@@ -85,7 +96,7 @@ describe GitTopic do
   describe "#work_on" do
 
     describe "in fresh" do
-      before( :each ) { Dir.chdir( 'fresh' )}
+      before( :each ) { use_repo( 'fresh' )}
       after( :each )  { Dir.chdir( '..' )}
 
       it "
@@ -108,7 +119,7 @@ describe GitTopic do
 
     describe "in in-progress" do
 
-      before( :each ) { Dir.chdir( 'in-progress' )}
+      before( :each ) { use_repo( 'in-progress' )}
       after( :each )  { Dir.chdir( '..' )}
 
 
@@ -139,7 +150,7 @@ describe GitTopic do
 
     describe "in in-progress" do
 
-      before( :each ) { Dir.chdir 'in-progress' }
+      before( :each ) { use_repo 'in-progress' }
       after( :each )  { Dir.chdir '..' }
 
       describe "without an argument" do
@@ -181,7 +192,7 @@ describe GitTopic do
 
     describe "with pending review branches" do
 
-      before( :each ) { Dir.chdir 'in-progress' }
+      before( :each ) { use_repo 'in-progress' }
       after( :each )  { Dir.chdir '..' }
 
 
@@ -207,7 +218,7 @@ describe GitTopic do
     end
 
     describe "passed the --prepended flag" do
-      before( :each ) { Dir.chdir 'in-progress' }
+      before( :each ) { use_repo 'in-progress' }
       after( :each )  { Dir.chdir '..' }
 
       it "should invoke git status before producing its output" do
@@ -221,7 +232,7 @@ describe GitTopic do
   describe "#review" do
 
     describe "with no review branches" do
-      before( :each ) { Dir.chdir 'fresh' }
+      before( :each ) { use_repo 'fresh' }
       after( :each )  { Dir.chdir '..' }
 
       it "should report that there is nothing to do" do
@@ -235,7 +246,7 @@ describe GitTopic do
     end
 
     describe "with some review branches" do
-      before( :each ) { Dir.chdir 'in-progress' }
+      before( :each ) { use_repo 'in-progress' }
       after( :each )  { Dir.chdir '..' }
 
       it "
@@ -279,7 +290,7 @@ describe GitTopic do
 
     describe "while on a review branch" do
       before( :each ) do
-        Dir.chdir 'in-progress'
+        use_repo 'in-progress'
         GitTopic.review 'user24601/zombie-basic'
       end
       after( :each ) { Dir.chdir '..' }
@@ -297,13 +308,14 @@ describe GitTopic do
           git_remote_branches.should_not  include( 'review/user24601/zombie-basic' )
 
           git_head.should                 == '0ce06c616769768f09f5e629cfcc68eabe3dee81'
+          git_origin_master.should        == '0ce06c616769768f09f5e629cfcc68eabe3dee81'
         end
       end
     end
 
     describe "while on a review branch that does not FF" do
       before( :each ) do
-        Dir.chdir 'in-progress'
+        use_repo 'in-progress'
         system "
           git checkout master > /dev/null 2> /dev/null && 
           git merge wip/prevent-ff > /dev/null 2> /dev/null
@@ -325,7 +337,7 @@ describe GitTopic do
     end
 
     describe "while not on a review branch" do
-      before( :each ) { Dir.chdir 'in-progress' }
+      before( :each ) { use_repo 'in-progress' }
       after( :each ) { Dir.chdir '..' }
 
       it "should fail" do
@@ -339,7 +351,7 @@ describe GitTopic do
 
     describe "while on a review branch" do
       before( :each ) do
-        Dir.chdir 'in-progress'
+        use_repo 'in-progress'
         GitTopic.review 'user24601/zombie-basic'
       end
       after( :each ) { Dir.chdir '..' }
@@ -361,7 +373,7 @@ describe GitTopic do
     end
     
     describe "while not on a review branch" do
-      before( :each ) { Dir.chdir 'in-progress' }
+      before( :each ) { use_repo 'in-progress' }
       after( :each ) { Dir.chdir '..' }
 
       it "should fail" do

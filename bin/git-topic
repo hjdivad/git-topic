@@ -17,7 +17,6 @@ module GitTopic
       [h[:major], h[:minor], h[:patch], h[:build]].compact.join( "." )
     end
   }.call
-  GlobalOptKeys = [ :verbose, :help, :verbose_given, :version ]
 
   class << self
     def run
