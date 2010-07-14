@@ -2,8 +2,6 @@
 # encoding: utf-8
 
 require 'rubygems'
-require 'bundler'
-Bundler.setup :default, :runtime
 
 require 'trollop'
 require 'git_topic'

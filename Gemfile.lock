@@ -2,26 +2,25 @@ GEM
   remote: http://rubygems.org/
   specs:
     ZenTest (4.3.3)
-    activesupport (2.3.8)
+    activesupport (3.0.0.beta4)
     diff-lcs (1.1.2)
     gemcutter (0.5.0)
       json_pure
     git (1.2.5)
-    git-topic (0.1.4)
     jeweler (1.4.0)
       gemcutter (>= 0.1.0)
       git (>= 1.2.5)
       rubyforge (>= 2.0.0)
     json_pure (1.4.3)
     rake (0.8.7)
-    rspec (2.0.0.beta.16)
-      rspec-core (= 2.0.0.beta.16)
-      rspec-expectations (= 2.0.0.beta.16)
-      rspec-mocks (= 2.0.0.beta.16)
-    rspec-core (2.0.0.beta.16)
-    rspec-expectations (2.0.0.beta.16)
+    rspec (2.0.0.beta.17)
+      rspec-core (= 2.0.0.beta.17)
+      rspec-expectations (= 2.0.0.beta.17)
+      rspec-mocks (= 2.0.0.beta.17)
+    rspec-core (2.0.0.beta.17)
+    rspec-expectations (2.0.0.beta.17)
       diff-lcs (>= 1.1.2)
-    rspec-mocks (2.0.0.beta.16)
+    rspec-mocks (2.0.0.beta.17)
     rubyforge (2.0.4)
       json_pure (>= 1.1.7)
     trollop (1.16.2)
@@ -32,9 +31,8 @@ PLATFORMS
 
 DEPENDENCIES
   ZenTest
-  activesupport
+  activesupport (>= 3.0.0.beta4)
   gemcutter
-  git-topic
   jeweler
   rake
   rspec (>= 2.0.0.beta.16)

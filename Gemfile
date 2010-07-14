@@ -2,17 +2,15 @@
 
 source :gemcutter
 
-gem 'git-topic'
-
 group :runtime do
-  gem 'activesupport'
+  gem 'activesupport',  '>= 3.0.0.beta4'
   gem 'trollop'
 end
 
 group :development do
   gem 'jeweler'
   gem 'rake'
-  gem 'rspec',  '>= 2.0.0.beta.16'
+  gem 'rspec',          '>= 2.0.0.beta.16'
   gem 'ZenTest'
   gem 'yard'
   gem 'gemcutter'
