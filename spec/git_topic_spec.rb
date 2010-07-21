@@ -98,7 +98,6 @@ describe GitTopic do
   end
 
   # }}}
- 
 
   describe "#work_on" do
 
@@ -150,8 +149,14 @@ describe GitTopic do
         git_head.should                   == '44ffd9c9c8b52b201659e3ad318cdad6ec836b46'
       end
     end
-  end
+ 
+    pending "with no origin"
 
+    pending "namespaced arg wip/user/whatever"
+
+    pending "kill review/rejected branch"
+
+  end
 
   describe "#done" do
 
@@ -193,6 +198,9 @@ describe GitTopic do
       end
 
     end
+ 
+    pending "with an arg"
+
   end
 
   describe "#status" do
@@ -234,6 +242,9 @@ describe GitTopic do
         @output.should          =~ /# On branch master/
       end
     end
+
+    pending "with useless args"
+
   end
 
   describe "#review" do
@@ -291,6 +302,11 @@ describe GitTopic do
         lambda{ GitTopic.review( 'fakeuser/faketopic' )}.should raise_error
       end
     end
+ 
+    pending "with non-branch arg"
+    pending "with non-review-branch arg"
+    pending "with my-review-branch arg"
+
   end
 
   describe "#accept" do
@@ -352,6 +368,8 @@ describe GitTopic do
       end
     end
 
+    pending "with an arg"
+
   end
 
   describe "#reject" do
@@ -387,6 +405,9 @@ describe GitTopic do
         lambda{ GitTopic.reject }.should    raise_error
       end
     end
+ 
+    pending "with an arg"
+
   end
 
 
@@ -403,6 +424,9 @@ describe GitTopic do
       git_config( 'alias.r' ).should          == 'topic review'
       git_config( 'alias.st' ).should         == 'topic status --prepended'
     end
+
+    pending "with an arg"
+
   end
 end
 

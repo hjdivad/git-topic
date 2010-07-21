@@ -1,12 +1,6 @@
 #!/usr/bin/env ruby
 # encoding: utf-8
 
-# TODO 2: topic abandon <topic>
-# TODO 1: handle malformed args
-# TODO 1: git-topic comment
-#           edit files & have the diffs pulled into notes?
-
-# TODO 1: git work-on <topic> should kill review branch
 require 'active_support'
 require 'active_support/core_ext/hash/keys'
 
