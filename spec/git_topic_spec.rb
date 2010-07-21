@@ -296,8 +296,6 @@ describe GitTopic do
         @output.should          =~ /^#\s*zombie-basic\s*$/m
       end
 
-      pending "should not show others' rejected branches"
-
       it "should not show others' rejected topics" do
         git_remote_branches.should      include 'review/user24601/ninja-basic'
         GitTopic.review 'user24601/ninja-basic'
@@ -345,6 +343,29 @@ describe GitTopic do
 
         GitTopic.review
         @output.should    =~ /nothing to review/
+      end
+    end
+
+    describe "with exactly one review branch" do
+      before( :each ) do
+        use_repo 'in-progress'
+        seen_a_review_b = false
+        git_remote_branches.each do |b|
+          if b =~ %r{review/user24601/(?!zombie-basic)}
+            system "git push origin :refs/heads/#{b} > /dev/null 2> /dev/null"
+          end
+        end
+      end
+      after( :each ) { Dir.chdir '..' }
+
+      it "should switch to the sole review branch when given no arguments." do
+        git_remote_branches.select do |branch|
+          branch =~ %r{review/user24601}
+        end.should                      == ['review/user24601/zombie-basic']
+        GitTopic.review
+        git_branch.should               == 'review/user24601/zombie-basic'
+        git_branch_remote.should        == 'origin'
+        git_branch_merge.should         == 'refs/heads/review/user24601/zombie-basic'
       end
     end
 
