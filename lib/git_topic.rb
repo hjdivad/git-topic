@@ -25,7 +25,7 @@ module GitTopic
       # setup a remote branch, if necessary
       wb = wip_branch( topic )
       git(
-        "push origin HEAD:#{wb}"
+        "push origin HEAD:refs/heads/#{wb}"
       ) unless remote_branches.include? "origin/#{wb}"
       # switch to the new branch
       git [ switch_to_branch( wb, "origin/#{wb}" )]
@@ -35,7 +35,7 @@ module GitTopic
       if remote_branches.include? "origin/#{rej_branch}"
         git [
           "reset --hard origin/#{rej_branch}",
-          "push origin :#{rej_branch} HEAD:#{wb}",
+          "push origin :refs/heads/#{rej_branch} HEAD:refs/heads/#{wb}",
         ]
       end
 
@@ -63,7 +63,7 @@ module GitTopic
       wb = wip_branch( topic )
       rb = review_branch( topic )
       git [
-        "push origin #{wb}:#{rb} :#{wb}",
+        "push origin refs/heads/#{wb}:refs/heads/#{rb} :refs/heads/#{wb}",
         ("checkout master" if strip_namespace( topic ) == current_topic),
         "branch -D #{wip_branch( topic )}"
       ].compact
@@ -181,7 +181,7 @@ module GitTopic
 
       rem_review_branch   = find_remote_review_branch( topic ).gsub( %r{^origin/}, '' )
       git [
-        "push origin master :#{rem_review_branch}",
+        "push origin master :refs/heads/#{rem_review_branch}",
         "branch -d #{local_review_branch}"
       ]
 
@@ -199,9 +199,14 @@ module GitTopic
 
       rem_review_branch   = find_remote_review_branch( topic ).gsub( %r{^origin/}, '' )
       rem_rej_branch      = remote_rejected_branch( topic, user )
+
+      refspecs = [
+        "refs/heads/#{current_branch}:refs/heads/#{rem_rej_branch}",
+        ":refs/heads/#{rem_review_branch}",
+      ].join( " " )
       git [
         "checkout master",
-        "push origin #{current_branch}:#{rem_rej_branch} :#{rem_review_branch}",
+        "push origin #{refspecs}",
         "branch -D #{current_branch}"
       ]
 
