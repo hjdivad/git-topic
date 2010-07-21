@@ -43,22 +43,28 @@ module GitTopic
     # Done with the given topic.  If none is specified, then topic is assumed to
     # be the current branch (if it's a topic branch).
     def done( topic=nil, opts={} )
-      raise(
-        "Branch must be a topic branch"
-      ) unless current_branch =~ %r{^wip/}
-      raise(
-        "Working tree must be clean"
-      ) unless working_tree_clean?
+      if topic.nil?
+        raise "
+          Current branch is not a topic branch.  Switch to a topic branch or
+          supply an argument.
+        ".oneline if current_topic.nil?
 
-      topic = current_topic if topic.nil?
+        topic = current_topic
+      else
+        raise "
+          Specified topic #{topic} does not refer to a topic branch.
+        " unless branches.include? wip_branch( topic )
+      end
+      raise "Working tree must be clean" unless working_tree_clean?
+
 
       wb = wip_branch( topic )
       rb = review_branch( topic )
       git [
         "push origin #{wb}:#{rb} :#{wb}",
-        "checkout master",
+        ("checkout master" if strip_namespace( topic ) == current_topic),
         "branch -D #{wip_branch( topic )}"
-      ]
+      ].compact
     end
 
     # Produce status like
