@@ -292,6 +292,20 @@ describe GitTopic do
         @output.should          =~ /^#\s*zombie-basic\s*$/m
       end
 
+      pending "should not show others' rejected branches"
+
+      it "should not show others' rejected topics" do
+        git_remote_branches.should      include 'review/user24601/ninja-basic'
+        GitTopic.review 'user24601/ninja-basic'
+        GitTopic.reject
+        git_remote_branches.should_not  include 'review/user24601/ninja-basic'
+        git_remote_branches.should      include 'rejected/user24601/ninja-basic'
+
+        @output.clear
+        GitTopic.status
+        @output.should_not              =~ %r{ninja-basic}
+      end
+
       it "should show my rejected topics" do
         git_remote_branches.should      include 'rejected/davidjh/krakens'
         GitTopic.status
