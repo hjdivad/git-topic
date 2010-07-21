@@ -38,6 +38,8 @@ module GitTopic
           "push origin :#{rej_branch} HEAD:#{wb}",
         ]
       end
+
+      report "Switching branches to work on #{topic}."
     end
 
     # Done with the given topic.  If none is specified, then topic is assumed to
@@ -65,6 +67,8 @@ module GitTopic
         ("checkout master" if strip_namespace( topic ) == current_topic),
         "branch -D #{wip_branch( topic )}"
       ].compact
+
+      report "Completed topic #{topic}.  It has been pushed for review."
     end
 
     # Produce status like
@@ -119,11 +123,11 @@ module GitTopic
     end
 
     # Switch to a review branch to check somebody else's code.
-    def review( spec=nil, opts={} )
+    def review( ref=nil, opts={} )
       rb = remote_branches_organized
       review_branches = rb[:review]
 
-      if spec.nil?
+      if ref.nil?
         # select the oldest (by HEAD) topic, if any exist
         if review_branches.empty?
           puts "nothing to review."
@@ -132,12 +136,12 @@ module GitTopic
           user, topic = oldest_review_user_topic
         end
       else
-        p             = topic_parts( spec )
+        p             = topic_parts( ref )
         user, topic   = p[:user], p[:topic]
       end
 
       if remote_topic_branch = find_remote_review_branch( topic )
-        # Get the actual user/topic, e.g. to get the user if spec only specifies
+        # Get the actual user/topic, e.g. to get the user if ref only specifies
         # the topic.
         real_user, real_topic = user_topic_name( remote_topic_branch )
         git [
@@ -145,8 +149,10 @@ module GitTopic
             review_branch( real_topic, real_user ),
             remote_topic_branch )]
       else
-        raise "No review topic found matching ‘#{spec}’"
+        raise "No review topic found matching ‘#{ref}’"
       end
+
+      report  "Reviewing topic #{user}/#{topic}."
     end
 
     # Accept the branch currently being reviewed.
@@ -178,6 +184,8 @@ module GitTopic
         "push origin master :#{rem_review_branch}",
         "branch -d #{local_review_branch}"
       ]
+
+      report  "Accepted topic #{user}/#{topic}."
     end
 
     # Reject the branch currently being reviewed.
@@ -196,6 +204,8 @@ module GitTopic
         "push origin #{current_branch}:#{rem_rej_branch} :#{rem_review_branch}",
         "branch -D #{current_branch}"
       ]
+
+      report  "Rejected topic #{user}/#{topic}"
     end
 
     def install_aliases( opts={} )
@@ -214,6 +224,23 @@ module GitTopic
         "config #{flags} alias.r        'topic review'",
         "config #{flags} alias.st       'topic status --prepended'",
       ]
+
+      report  "Aliases installed Successfully.",
+              "
+                Error installing aliases.  re-run with --verbose flag for
+                details.
+              ".oneline
+    end
+
+    protected
+
+    def report( success_msg, error_msg=nil )
+      if $?.success?
+        puts success_msg
+      else
+        error_msg ||= "Error running command.  re-run with --verbose for details"
+        raise error_msg
+      end
     end
 
   end

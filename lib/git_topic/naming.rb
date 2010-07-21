@@ -138,7 +138,7 @@ module GitTopic::Naming
 
       commits_by_age.find do |ref|
         # no ‘,’, i.e. only one ref matches the commit
-        ref.index( ',' ).nil?
+        !ref.strip.empty? && ref.index( ',' ).nil?
       end.strip[ 1..-2 ] # chomp the leading and trailing parenthesis
     end
 
