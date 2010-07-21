@@ -15,9 +15,15 @@ describe GitTopic do
     FileUtils.rm_rf   './tmp'
     FileUtils.mkdir   './tmp'
 
-    %w(fresh in-progress origin).each do |repo|
-      FileUtils.cp_r "spec/template/#{repo}",   './tmp'
+    # Copy our repos into tmp
+    %w(fresh in-progress).each do |d|
+      FileUtils.mkdir "./tmp/#{d}"
+      FileUtils.cp_r "spec/template/#{d}",          "./tmp/#{d}/.git"
+    end
+    FileUtils.cp_r "spec/template/origin",          './tmp'
+    FileUtils.cp_r "spec/template/origin-fresh",    './tmp'
 
+    %w(origin origin-fresh fresh in-progress).each do |repo|
       # set template branches to their proper name (i.e. matching @user)
       Dir.chdir "./tmp/#{repo}"
       git_branches.each do |orig_name|
@@ -25,6 +31,7 @@ describe GitTopic do
         system(
           "git branch -m #{orig_name} #{new_name}"
         ) unless orig_name == new_name
+        system "git fetch --prune > /dev/null 2> /dev/null"
       end
       Dir.chdir @starting_dir
     end
@@ -250,7 +257,7 @@ describe GitTopic do
       after( :each )  { Dir.chdir '..' }
 
       it "
-        should create a local tracking branch for the most recent remote review
+        should create a local tracking branch for the oldest remote review
         branch if none was specified
       " do
 
@@ -318,7 +325,7 @@ describe GitTopic do
         use_repo 'in-progress'
         system "
           git checkout master > /dev/null 2> /dev/null && 
-          git merge wip/prevent-ff > /dev/null 2> /dev/null
+          git merge origin/wip/prevent-ff > /dev/null 2> /dev/null
         "
         @original_git_Head    = git_head
         GitTopic.review 'user24601/zombie-basic'

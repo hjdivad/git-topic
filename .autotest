@@ -1,0 +1,10 @@
+#!/usr/bin/env ruby
+
+
+Autotest.add_hook :initialize do |at|
+  at.add_exception %r{tmp\/}
+  at.add_exception %r{template\/}
+  %w(.git).each do |ex|
+    at.add_exception ex
+  end
+end

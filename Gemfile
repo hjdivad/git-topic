@@ -14,6 +14,8 @@ group :development do
   gem 'ZenTest'
   gem 'yard'
   gem 'gemcutter'
+
+  gem 'autotest-screen'
 end
 
 

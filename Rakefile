@@ -3,16 +3,7 @@ require 'yaml'
 require 'rubygems'
 require 'rake'
 
-Dir[ 'lib/tasks/**/*' ].each{ |l| require l }
-
-# TODO 1: cleanup specs (possibly have specs setup repos, or possibly tar up
-#         repos and extract them)
-# TODO 2: topic abandon <topic>
-# TODO 1: handle malformed args
-# TODO 1: git-topic comment
-#           edit files & have the diffs pulled into notes?
-
-# TODO 1: git work-on <topic> should kill review branch
+Dir[ 'lib/tasks/**/*' ].each{ |l| load l }
 
 
 begin

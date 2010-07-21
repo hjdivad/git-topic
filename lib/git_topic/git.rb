@@ -1,5 +1,9 @@
 
-module GitTopic; end
+module GitTopic
+  class << self; attr_accessor :global_opts end
+  self.global_opts = {}
+end
+
 module GitTopic::Git
   module ClassMethods
 
@@ -41,13 +45,19 @@ module GitTopic::Git
     def git( cmds=[], opts={} )
       cmds  = [cmds] if cmds.is_a? String
       redir = cmd_redirect_suffix( opts )
-      system cmds.map{|c| "git #{c} #{redir}"}.join( " && " )
+      cmd = cmds.map{|c| "git #{c} #{redir}"}.join( " && " )
+
+      puts cmd if GitTopic::global_opts[:verbose]
+      system cmd
     end
 
     def capture_git( cmds=[] )
       cmds = [cmds] if cmds.is_a? String
       redir = "2> /dev/null" unless display_git_output?
-      `#{cmds.map{|c| "git #{c} #{redir}"}.join( " && " )}`
+      cmd = "#{cmds.map{|c| "git #{c} #{redir}"}.join( " && " )}"
+
+      puts cmd if GitTopic::global_opts[:verbose]
+      `#{cmd}`
     end
 
   end
