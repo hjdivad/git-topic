@@ -67,7 +67,9 @@ task 'version:write:build' do
   }
   v.merge!( y ) if y.is_a? Hash
   v[ :build ] = ENV['BUILD']
-  File.open( "VERSION.yml", "w" ){|f| f.puts YAML::dump( v )}
+
+  v.each{|k,v| ENV[ k.to_s.upcase ] = v.to_s}
+  Rake::Task["version:write"].invoke
 end
 
 task 'version:bump:build' do
