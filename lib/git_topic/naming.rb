@@ -7,28 +7,36 @@ module GitTopic::Naming
     protected
 
     def backup_branch( topic )
-      "backup/#{user}/#{topic}"
+      "backup/#{user}/#{strip_namespace topic}"
     end
 
     def wip_branch( topic )
-      "wip/#{user}/#{topic}"
+      "wip/#{user}/#{strip_namespace topic}"
     end
 
     def rejected_branch( topic )
-      "rejected/#{user}/#{topic}"
+      "rejected/#{user}/#{strip_namespace topic}"
     end
 
     def review_branch( topic, user=user )
-      "review/#{user}/#{topic}"
+      "review/#{user}/#{strip_namespace topic}"
     end
 
     def remote_rejected_branch( topic, user=user )
-      "rejected/#{user}/#{topic}"
+      "rejected/#{user}/#{strip_namespace topic}"
     end
 
 
     def find_remote_review_branch( topic )
       others_review_branches.find{|b| b.index topic}
+    end
+
+    def strip_namespace( ref )
+      if ref =~ %r{(?:wip|rejected|review)/\S*/(.*)}
+        $1
+      else
+        ref
+      end
     end
 
 
@@ -42,16 +50,16 @@ module GitTopic::Naming
       end
     end
 
-    def topic_parts( spec )
+    def topic_parts( ref )
       p = {}
-      parts = spec.split( '/' )
+      parts = ref.split( '/' )
       case parts.size
       when 2
         p[:user], p[:topic] = parts
       when 1
         p[:topic] = parts.first
       else
-        raise "Unexpected topic: #{spec}"
+        raise "Unexpected topic: #{ref}"
       end
       p
     end

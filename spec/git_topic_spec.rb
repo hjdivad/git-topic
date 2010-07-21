@@ -101,9 +101,24 @@ describe GitTopic do
 
   describe "#work_on" do
 
+      share_examples_for "#work_on general cases" do
+
+        it "
+          should trim namespaces from args and output a warning
+        ".oneline do
+
+          git_branch.should_not                   == "wip/davidjh/topic"
+          GitTopic.work_on "wip/#{@user}/topic"
+          git_branch.should                       == "wip/davidjh/topic"
+        end
+
+      end
+
     describe "in fresh" do
       before( :each ) { use_repo( 'fresh' )}
       after( :each )  { Dir.chdir( '..' )}
+
+      it_should_behave_like "#work_on general cases"
 
       it "
        should create (and switch to) a new branch with a name that matches the
@@ -128,6 +143,7 @@ describe GitTopic do
       before( :each ) { use_repo( 'in-progress' )}
       after( :each )  { Dir.chdir( '..' )}
 
+      it_should_behave_like "#work_on general cases"
 
       it "should switch to (rather than create) an existing topic branch" do
         git_branches.should include( "wip/#{@user}/zombie-basic" )
@@ -148,13 +164,23 @@ describe GitTopic do
         git_remote_branches.should        include( "wip/#{@user}/krakens" )
         git_head.should                   == '44ffd9c9c8b52b201659e3ad318cdad6ec836b46'
       end
+
+      it "
+        should use (and then destroy) the review branch for the topic, if one
+        exists
+      ".oneline do
+
+        git_remote_branches.should        include( "rejected/#{@user}/krakens" )
+        GitTopic.work_on    'krakens'
+        git_branch.should                 == "wip/#{@user}/krakens"
+        git_remote_branches.should_not    include( "rejected/#{@user}/krakens" )
+        git_remote_branches.should        include( "wip/#{@user}/krakens" )
+        git_head.should                   == '44ffd9c9c8b52b201659e3ad318cdad6ec836b46'
+      end
+
     end
  
     pending "with no origin"
-
-    pending "namespaced arg wip/user/whatever"
-
-    pending "kill review/rejected branch"
 
   end
 
