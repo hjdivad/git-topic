@@ -86,7 +86,7 @@ all work is written by an author, and reviewed by someone else.
 
 
 
-=== Reviewing a topc (proposed changes)
+=== Reviewing a topic (proposed changes)
 
 As above, but if, after examining the code you feel some changes are
 appropriate, you can either:
@@ -163,7 +163,7 @@ appropriate, you can either:
 
 At present the binary is stupidly slow.  Actually, the binary is not slow, but
 all rubygems binaries are slow.  See ruby issue 3465[1].  One way around this is
-to modify yor PATH so you invoke the binary directly (instead of the rubygem
+to modify your PATH so you invoke the binary directly (instead of the rubygem
 wrapper).  Alternatively, put up with a 300ms load time until you have a ruby
 with the issue fixed.
 
@@ -185,7 +185,7 @@ with the issue fixed.
 
 == Copyright
 
-Copyright (c) 2010 David J. Hamilton. See LICENSE for details.
+Copyright © 2010 David J. Hamilton. See LICENSE for details.
 
 == References
 
