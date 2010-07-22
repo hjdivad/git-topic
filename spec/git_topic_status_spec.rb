@@ -34,15 +34,19 @@ describe GitTopic do
         @output.should_not              =~ %r{ninja-basic}
       end
 
-      it "should show my rejected topics" do
+      it "
+        should show my rejected topics, and note that they have comments, when
+        they do.
+      " do
         git_remote_branches.should      include "rejected/#{@user}/krakens"
         GitTopic.status
         @output.should_not      be_nil
 
-        @output.should          =~ /^#\s*krakens\s*$/m
+        @output.should          =~ /^#\s*krakens\s*\(reviewer comments\)\s*$/m
       end
 
     end
+
 
     describe "passed the --prepended flag" do
       before( :each ) { use_repo 'in-progress' }

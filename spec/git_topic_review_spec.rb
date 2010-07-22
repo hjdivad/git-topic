@@ -49,13 +49,26 @@ describe GitTopic do
       it "
         should create a local tracking branch for the oldest remote review
         branch if none was specified
-      " do
+      ".oneline do
 
         git_remote_branches.should      include 'review/user24601/zombie-basic'
         GitTopic.review
         git_branch.should               == 'review/user24601/zombie-basic'
         git_branch_remote.should        == 'origin'
         git_branch_merge.should         == 'refs/heads/review/user24601/zombie-basic'
+      end
+
+      it "should use the local tracking branch, if one exists" do
+        git_remote_branches.should      include 'review/user24601/zombie-basic'
+
+        GitTopic.review 'zombie-basic'
+        system "git checkout master > /dev/null 2> /dev/null"
+
+        git_branch.should                       == "master"
+        lambda do
+          GitTopic.review 'zombie-basic' 
+        end.should_not                          raise_error
+        git_branch.should                       == "review/user24601/zombie-basic"
       end
 
       it "should provide feedback to the user" do

@@ -40,13 +40,20 @@ module GitTopic::Naming
     end
 
 
+    def notes_ref( branch=current_branch )
+      user, topic = user_topic_name( branch )
+      "refs/notes/reviews/#{user}/#{topic}"
+    end
+
+
     def user_topic_name( branch )
       if branch =~ %r{^origin}
         branch =~ %r{^\S*?/\S*?/(\S*?)/(\S*)}
         [$1, $2]
-      else
-        branch =~ %r{^\S*?/(\S*?)/(\S*)}
+      elsif branch =~ %r{^(?:\S*/)?(\S*?)/(\S*)}
         [$1, $2]
+      else
+        raise "Cannot compute user_topic for [#{branch}]"
       end
     end
 
@@ -69,6 +76,11 @@ module GitTopic::Naming
 
     def user
       @@user ||= (ENV['USER'] || `whoami`)
+    end
+
+    def current_namespace
+      current_branch =~ %r{(wip|review|rejected)/(\S*)}
+      $1
     end
 
     def current_topic
@@ -122,8 +134,15 @@ module GitTopic::Naming
         end
 
         namespace_ut.symbolize_keys!
-        namespace_ut[:review] ||= {}
+        namespace_ut[:review]   ||= {}
         namespace_ut[:rejected] ||= {}
+
+        namespace_ut[:rejected].each do |user, topics|
+          topics.map! do |topic|
+            suffix = " (reviewer comments) "
+            "#{topic}#{suffix if existing_comments?( "#{user}/#{topic}" )}"
+          end
+        end
 
         namespace_ut[:review].reject!{|k,v| k == user}
         namespace_ut

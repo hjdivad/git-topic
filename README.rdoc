@@ -1,11 +1,21 @@
-= git-topic
+=       git-topic
 
 git-topic is a git command to help with a particular kind of workflow, in which
 all work is written by an author, and reviewed by someone else.
 
-== Workflow in brief
 
-=== Doing Work
+=       Requirements
+
+* git-topic has only been tested on debian flavours of linux.  Other unix-like
+  environments should work.
+* git >= 1.7.1        (older versions may work, except for comment and comments
+                      commands)
+* ruby >= 1.9.2-rc1   (older versions may work)
+
+
+=       Workflow
+==      Workflow in brief
+===     Doing Work
 
 1.      Create a topic branch in the wip namespace.
 2.      Do some work.
@@ -17,7 +27,7 @@ all work is written by an author, and reviewed by someone else.
 2.      Do some work, resolve the reviewer's issues.
 3.      go to step 3, above.
 
-=== Reviewing
+===     Reviewing
 
 1.          Create a local branch from a review branch somebody else pushed.
 2.          Review their work.
@@ -27,9 +37,8 @@ all work is written by an author, and reviewed by someone else.
             the review namespace.
 
 
-== Workflow without git-topic
-
-=== Working on a topic (e.g. feature, or bugfix) foo
+==      Workflow without git-topic
+===     Working on a topic (e.g. feature, or bugfix) foo
 
     # Create a new branch and switch to it.
     git checkout -b wip/hal/foo
@@ -60,7 +69,7 @@ all work is written by an author, and reviewed by someone else.
 
 
 
-=== Reviewing a  topic (no proposed changes)
+===     Reviewing a  topic (no proposed changes)
 
     # update origin
     git fetch origin
@@ -86,19 +95,19 @@ all work is written by an author, and reviewed by someone else.
 
 
 
-=== Reviewing a topic (proposed changes)
+===     Reviewing a topic (proposed changes)
 
 As above, but if, after examining the code you feel some changes are
 appropriate, you can either:
 
-==== do them yourself and have the other person review and merge
+====    do them yourself and have the other person review and merge
 
     # do some changes, then destroy the old review branch and make a new one
     # with the cleaned up code.  Now the owner is changed from djh to hal, so
     # djh must review and merge into master
     git push origin review/djh/bar:review/hal/bar :review/djh/bar
 
-==== do some (or no) changes, but with some TODOs for the original author.
+====    do some (or no) changes, but with some TODOs for the original author.
 
     # do your changes on review/djh/bar
 
@@ -110,9 +119,8 @@ appropriate, you can either:
     # review/djh/bar
 
 
-== Workflow with git-topic
-
-=== Doing Work
+==      Workflow with git-topic
+===     Doing Work
 
     # Work on a (possibly new, possibly rejected) topic
     git topic work-on <topic>
@@ -121,7 +129,7 @@ appropriate, you can either:
     git topic done [<topic>]
 
 
-=== Reviewing
+===     Reviewing
 
     # see if we have any topics to review (or rejected topics to fix up)
     git topic status
@@ -131,10 +139,18 @@ appropriate, you can either:
     # happy with the review, get it into master
     git topic accept
 
-    # unhappy with the review, push it to rejected
+    # unhappy with the review
+    # edit files to add file-specific comments (see git-topic comment --help for
+    # details).
+   
+    # save your file specific comments, and launch an editor to enter general
+    # comments about the topic.
+    git topic comment
+
+    # push the topic to rejected.
     git topic reject
 
-== Again, but with aliases
+==      Again, but with aliases
 
     # first install aliases
     #   add --local if you don't want to update your global aliases
@@ -144,6 +160,10 @@ appropriate, you can either:
     #   git w <topic>
     git work-on <topic>
 
+    # see reviewer's comments
+    git comments
+
+    # finished, submit work
     git done
 
 
@@ -157,9 +177,23 @@ appropriate, you can either:
 
     git accept
     # or
+    git comment
     git reject
 
-==  Misc
+==      Bash autocompletion
+
+See git-topic --completion-help for details.  In short, you have to do some
+manual work, because loading completions as a gem is too slow (see Misc, below,
+and ruby issue 3465[1]).
+
+1.  Make sure you source share/completion.bash __before__ sourcing git's standard
+    completion.
+
+2.  Copy bin/git-topic-completion to your gem env's default bin dir, overriding
+    the generated git-topic-completion.  Otherwise, autocompletion will be too
+    slow to be useful.
+
+==      Misc
 
 At present the binary is stupidly slow.  Actually, the binary is not slow, but
 all rubygems binaries are slow.  See ruby issue 3465[1].  One way around this is
@@ -167,12 +201,8 @@ to modify your PATH so you invoke the binary directly (instead of the rubygem
 wrapper).  Alternatively, put up with a 300ms load time until you have a ruby
 with the issue fixed.
 
-==  Obvious Features Missing
 
-1.  shell autocomplete
-
-
-== Note on Patches/Pull Requests
+==      Note on Patches/Pull Requests
 
 1.  Fork the project.
 2.  Make your feature addition or bug fix.
@@ -183,10 +213,10 @@ with the issue fixed.
     can ignore when I pull)
 5.  Send me a pull request. Bonus points for topic branches.
 
-== Copyright
+==      Copyright
 
 Copyright © 2010 David J. Hamilton. See LICENSE for details.
 
-== References
+==      References
 
 1. http://redmine.ruby-lang.org/issues/show/3465

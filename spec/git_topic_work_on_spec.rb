@@ -94,6 +94,16 @@ describe GitTopic do
       end
 
       it "
+        should report the presence of comments to the user, when the topic has
+        been rejected.
+      ".oneline do
+
+        git_remote_branches.should        include( "rejected/#{@user}/krakens" )
+        GitTopic.work_on    'krakens'
+        @output.should                    =~ /comments/
+      end
+
+      it "
         should use (and then destroy) the review branch for the topic, if one
         exists
       ".oneline do

@@ -11,6 +11,8 @@ describe GitTopic do
       git_config( 'alias.review' ).should     == 'topic review'
       git_config( 'alias.accept' ).should     == 'topic accept'
       git_config( 'alias.reject' ).should     == 'topic reject'
+      git_config( 'alias.comment' ).should    == 'topic comment'
+      git_config( 'alias.comments' ).should   == 'topic comments'
 
       git_config( 'alias.w' ).should          == 'topic work-on'
       git_config( 'alias.r' ).should          == 'topic review'

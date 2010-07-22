@@ -9,6 +9,34 @@ module GitTopic::Git
 
     protected
 
+    def git_dir
+      @@git_dir ||= (
+        git_dir = capture_git( "rev-parse --git-dir" ).chomp;
+        raise "Unexpected gitdir: [#{git_dir}]" unless git_dir.index '.git'
+        git_dir
+      )
+    end
+
+    def git_editor
+      @@git_editor ||= capture_git( "var GIT_EDITOR" ).chomp
+    end
+
+    def git_author_name_short
+      @@git_author_name_short ||= (
+        full_name = capture_git( "config user.name" )
+        raise "
+          whatever
+        " unless $?.success?
+
+        parts     = full_name.split( " " )
+        fname     = parts.shift
+        fname     = "#{fname[0..0].upcase}#{fname[1..-1]}"
+        suffix    = parts.map{ |p| p[0..0].upcase }.join( "" )
+
+        "#{fname} #{suffix}".strip
+      )
+    end
+
     def working_tree_clean?
       git [ "diff --quiet", "diff --quiet --cached" ]
       $?.success?
@@ -16,6 +44,15 @@ module GitTopic::Git
 
     def working_tree_dirty?
       not working_tree_clean?
+    end
+
+    def existing_comments?( branch=current_branch )
+      ref = notes_ref( branch )
+      not capture_git( "notes --ref #{ref} list" ).chomp.empty?
+    end
+
+    def existing_comments
+      capture_git( "notes --ref #{notes_ref} show" ).chomp
     end
 
 
@@ -36,6 +73,10 @@ module GitTopic::Git
       end
     end
 
+    def invoke_git_editor( file )
+      system "#{git_editor} #{file}"
+    end
+
     def cmd_redirect_suffix( opts )
       if !opts[:show] && !display_git_output?
         "> /dev/null 2> /dev/null"
@@ -43,21 +84,43 @@ module GitTopic::Git
     end
 
     def git( cmds=[], opts={} )
+      opts.assert_valid_keys    :must_succeed
+
       cmds  = [cmds] if cmds.is_a? String
       redir = cmd_redirect_suffix( opts )
       cmd = cmds.map{|c| "git #{c} #{redir}"}.join( " && " )
 
       puts cmd if GitTopic::global_opts[:verbose]
-      system cmd
+      result = system( cmd )
+
+      if opts[:must_succeed] && !$?.success?
+        raise "
+          Required git command failed:\n  #{cmd}.\n  re-run with --verbose to
+          see git output.
+        ".cleanup
+      end
+
+      result
     end
 
-    def capture_git( cmds=[] )
+    def capture_git( cmds=[], opts={} )
+      opts.assert_valid_keys    :must_succeed
+
       cmds = [cmds] if cmds.is_a? String
       redir = "2> /dev/null" unless display_git_output?
       cmd = "#{cmds.map{|c| "git #{c} #{redir}"}.join( " && " )}"
 
       puts cmd if GitTopic::global_opts[:verbose]
-      `#{cmd}`
+      result = `#{cmd}`
+
+      if opts[:must_succeed] && !$?.success?
+        raise "
+          Required git command failed:\n  #{cmd}.\n  re-run with --verbose to
+          see git output.
+        ".cleanup
+      end
+
+      result
     end
 
   end

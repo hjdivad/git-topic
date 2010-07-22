@@ -29,6 +29,14 @@ class << GitTopic
     end
   end
   alias_method_chain  :git, :implicit_capture
+
+  def invoke_git_editor( file )
+    raise "
+      invoke_git_editor invoked with (#{file}).  If you expect this method to be
+      called, mock or stub it.
+    ".oneline
+  end
+
 end
 
 
@@ -90,6 +98,10 @@ Rspec.configure do |c|
           "git branch -m #{orig_name} #{new_name}"
         ) unless orig_name == new_name
         system "git fetch --prune > /dev/null 2> /dev/null"
+      end
+      if File.exists? ".git/refs/notes/reviews/USER"
+        FileUtils.mv  ".git/refs/notes/reviews/USER",
+                      ".git/refs/notes/reviews/#{@user}"
       end
       Dir.chdir @starting_dir
     end
@@ -155,6 +167,19 @@ def git_remote_branches
     bn
   end
 end
+
+def git_notes_list( ref )
+  `git notes --ref #{ref}`.split( "\n" )
+end
+
+def git_notes_show( ref, commit='HEAD' )
+  `git notes --ref #{ref} show #{commit}`.chomp
+end
+
+def git_diff
+  `git diff --no-color`.chomp
+end
+
 
 def dirty_branch!
   File.open( 'dirty', 'w' ){|f| f.puts "some content" }

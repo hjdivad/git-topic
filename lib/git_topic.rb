@@ -7,11 +7,13 @@ require 'active_support/core_ext/hash/keys'
 require 'core_ext'
 require 'git_topic/git'
 require 'git_topic/naming'
+require 'git_topic/comment'
 
 
 module GitTopic
   include GitTopic::Git
   include GitTopic::Naming
+  include GitTopic::Comment
 
   GlobalOptKeys = [
     :verbose, :help, :verbose_given, :version, :completion_help,
@@ -48,7 +50,11 @@ module GitTopic
       end
 
       report "Switching branches to work on #{topic}."
+      if existing_comments?
+        report "You have reviewer comments on this topic."
+      end
     end
+
 
     # Done with the given topic.  If none is specified, then topic is assumed to
     # be the current branch (if it's a topic branch).
@@ -78,6 +84,7 @@ module GitTopic
 
       report "Completed topic #{topic}.  It has been pushed for review."
     end
+
 
     # Produce status like
     #
@@ -130,6 +137,7 @@ module GitTopic
       end
     end
 
+
     # Switch to a review branch to check somebody else's code.
     def review( ref=nil, opts={} )
       rb = remote_branches_organized
@@ -162,6 +170,7 @@ module GitTopic
 
       report  "Reviewing topic #{user}/#{topic}."
     end
+
 
     # Accept the branch currently being reviewed.
     def accept( topic=nil, opts={} )
@@ -197,10 +206,88 @@ module GitTopic
       report  "Accepted topic #{user}/#{topic}."
     end
 
+
+    def comment( opts={} )
+      diff_legal = 
+        git( "diff --diff-filter=ACDRTUXB --quiet" )          && 
+        git( "diff --cached --diff-filter=ACDRTUXB --quiet" ) && 
+        $?.success?
+    
+      raise "
+        Diffs are not comments.  Files have been added, deleted or had their
+        modes changed.  See
+          git diff --diff-filter=ACDRTUXB
+        for a list of changes preventing git-topic comment from saving your
+        comments.
+      ".cleanup unless diff_legal
+
+
+      diff_empty          = git( "diff --diff-filter=M --quiet" ) && $?.success?
+
+      case current_namespace
+      when "wip"
+        if existing_comments?
+          raise "
+            diff → comments not allowed when replying.  Please make sure your
+            working tree is completely clean and then invoke git-topic comment
+            again.
+          ".oneline unless diff_empty
+
+          notes_from_reply_to_comments
+        else
+          puts "No comments to reply to.  See git-topic comment --help for usage."
+          return
+        end
+      when "review"
+        if existing_comments?
+          if opts[ :force_update ]
+            notes_from_initial_comments( "edit" )
+          else
+            raise "
+              diff → comments not allowed when replying.  Please make sure your
+              working tree is completely clean and then invoke git-topic comment
+              again.
+            ".oneline unless diff_empty
+
+            notes_from_reply_to_comments
+          end
+        else
+          notes_from_initial_comments
+        end
+      else
+        raise "Inappropriate namespace for comments: [#{namespace}]"
+      end
+
+      report "Your comments have been saved."
+    end
+
+    def comments( opts={} )
+      unless existing_comments?
+        puts "There are no comments on this branch."
+        return
+      end
+
+      git "log origin/master.. --show-notes=#{notes_ref} --no-standard-notes"
+    end
+
+
     # Reject the branch currently being reviewed.
-    def reject( topic=nil, opts={} )
+    def reject( topic_or_opts=nil, opts={} )
+      if topic_or_opts.is_a? Hash
+        topic = nil
+        opts = topic_or_opts
+      else
+        topic = topic_or_opts
+      end
+
       raise "Must be on a review branch." unless on_review_branch?
-      raise "Working tree must be clean" unless working_tree_clean?
+      unless working_tree_clean?
+        if opts[:save_comments]
+          comment
+        else
+          raise "Working tree must be clean without --save-comments."
+        end
+      end
 
       # switch to master
       # push to rejected, destroy remote
@@ -223,6 +310,7 @@ module GitTopic
       report  "Rejected topic #{user}/#{topic}"
     end
 
+
     def install_aliases( opts={} )
       opts.assert_valid_keys  :local, :local_given, *GlobalOptKeys
 
@@ -234,6 +322,8 @@ module GitTopic
         "config #{flags} alias.review   'topic review'",
         "config #{flags} alias.accept   'topic accept'",
         "config #{flags} alias.reject   'topic reject'",
+        "config #{flags} alias.comment  'topic comment'",
+        "config #{flags} alias.comments 'topic comments'",
 
         "config #{flags} alias.w        'topic work-on'",
         "config #{flags} alias.r        'topic review'",
@@ -246,6 +336,7 @@ module GitTopic
                 details.
               ".oneline
     end
+
 
     protected
 

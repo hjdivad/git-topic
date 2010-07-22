@@ -10,7 +10,9 @@ require 'git_topic'
 
 
 module GitTopic
-  SubCommands = %w(work-on done status review accept reject install-aliases)
+  SubCommands = %w(
+    work-on done status review comment comments accept reject install-aliases
+  )
   Version = lambda {
     h = YAML::load_file( "#{File.dirname( __FILE__ )}/../../VERSION.yml" )
     if h.is_a? Hash
@@ -116,6 +118,57 @@ module GitTopic
 
             Options:
           ".cleanup
+        when "comment"
+          banner "
+            git[-topic] comment
+
+            Add your comments to the current topic.  If this is the first time
+            you are reviwing <topic> you can set initial comments (see
+            INITIAL_COMMENTS below).  Otherwise, your GIT_EDITOR will open to
+            let you enter your replies to the comments.
+
+            Similarly, if you are working on a rejected branch, git-topic
+            comment will open your GIT_EDITOR so you can reply to the reviewer's
+            comments.
+           
+            INITIAL_COMMENTS
+
+            For the initial set of comments, you can edit the files in your
+            working tree to include any file specific comments.  Simply ensure
+            that all such comments are prefixed with a ‘#’.  git-topic comment
+            will convert your changes to a list of file-specific comments.
+
+            In order to use this feature, there are several requirements about
+            the output of git diff.
+
+            1.  It must only have file modifications.  i.e., no deletions,
+                additions or mode changes.
+
+            2.  Those modifications must only have line additions.  i.e. no line
+                deletions.
+
+            3.  Those line additions must all begin with any amount of
+                whitespace followed by a ‘#’ character.  i.e. they should be
+                comments.
+
+            Options:
+          ".cleanup
+
+          opt   :force_update,
+                "
+                  If you are commenting on the initial review and you wish to
+                  edit your comments, you can pass this flag to do so.
+                ".oneline
+        when "comments"
+          banner "
+            git[-topic] comments
+
+            View the comments for the current topic.  If your branch was
+            rejected, you should read these comments so you know what to do to
+            appease the reviewer.
+
+            Options:
+          ".cleanup
         when "accept"
           banner "
             git[-topic] accept
@@ -135,6 +188,13 @@ module GitTopic
 
             Options:
           ".cleanup
+
+          opt   :save_comments,
+                "
+                  If the current diff includes your comments (see git-topic
+                  comment --help), this flag will autosave those comments before
+                  rejecting the branch.
+                ".oneline
         when "install-aliases"
           banner "
             git-topic install-aliases
@@ -180,6 +240,10 @@ module GitTopic
       when "review"
         spec              = ARGV.shift
         review            spec, opts
+      when "comment"
+        comment           opts
+      when "comments"
+        comments          opts
       when "accept"
         topic             = ARGV.shift
         accept            topic, opts
