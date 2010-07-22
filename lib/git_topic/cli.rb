@@ -51,7 +51,11 @@ module GitTopic
             branch (and a matching remote branch) is created if necessary.
 
             If this is a rejected topic, work will continue from the state of
-            the rejected topic branch.
+            the rejected topic branch.  Similarly, if this is a review topic,
+            the review will be pulled and work will continue on that topic.
+
+            <topic>'s branches HEAD will point to <upstream>.  If <upstream> is
+            omitted, it will default to the current HEAD.
 
             Options:
           ".cleanup
@@ -143,6 +147,10 @@ module GitTopic
       case cmd
       when "work-on"
         topic             = ARGV.shift
+        upstream          = ARGV.shift
+        opts.merge!({
+          :upstream       => upstream
+        })
         work_on           topic, opts
       when /done(-with)?/
         topic             = ARGV.shift

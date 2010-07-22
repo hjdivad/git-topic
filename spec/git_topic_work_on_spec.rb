@@ -63,6 +63,17 @@ describe GitTopic do
         git_branch.should   == "wip/#{@user}/zombie-basic"
       end
 
+      it "should accept upstream as an argument" do
+        git_remote_branches.should include( "review/#{@user}/pirates" )
+        lambda do
+          GitTopic.work_on  'pirates-etc',
+                            :upstream => "origin/review/#{@user}/pirates"
+        end.should_not raise_error
+
+        git_branch.should   == "wip/#{@user}/pirates-etc"
+        git_head.should     == 'c0838ed2ee8f2e83c8bda859fc5e332b92f0a5a3'
+      end
+
       it "
         should use (and then destroy) the rejected branch for the topic, if one
         exists

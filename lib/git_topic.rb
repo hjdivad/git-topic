@@ -39,6 +39,11 @@ module GitTopic
         ]
       end
 
+      # Reset upstream, if specified
+      if opts[:upstream]
+        git "reset --hard #{opts[:upstream]}"
+      end
+
       report "Switching branches to work on #{topic}."
     end
 
