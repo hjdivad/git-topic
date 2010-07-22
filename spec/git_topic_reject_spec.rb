@@ -32,6 +32,11 @@ describe GitTopic do
           @output.should_not          be_nil
           @output.should_not          be_empty
         end
+
+        it "should fail if the working tree is dirty" do
+          dirty_branch!
+          lambda{ GitTopic.reject }.should    raise_error
+        end
       end
     end
     

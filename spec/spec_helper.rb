@@ -156,5 +156,10 @@ def git_remote_branches
   end
 end
 
+def dirty_branch!
+  File.open( 'dirty', 'w' ){|f| f.puts "some content" }
+  system "git add -N dirty"
+end
+
 # }}}
 

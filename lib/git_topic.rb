@@ -163,6 +163,7 @@ module GitTopic
     # Accept the branch currently being reviewed.
     def accept( topic=nil, opts={} )
       raise "Must be on a review branch." unless on_review_branch?
+      raise "Working tree must be clean" unless working_tree_clean?
       
       # switch to master
       # merge review branch, assuming FF
@@ -196,6 +197,7 @@ module GitTopic
     # Reject the branch currently being reviewed.
     def reject( topic=nil, opts={} )
       raise "Must be on a review branch." unless on_review_branch?
+      raise "Working tree must be clean" unless working_tree_clean?
 
       # switch to master
       # push to rejected, destroy remote

@@ -14,8 +14,7 @@ describe GitTopic do
 
         it "should fail if the working tree is dirty" do
           GitTopic.work_on 'zombie-basic'
-          File.open( 'foo', 'w' ){|f| f.puts "some content" }
-          system "git add -N foo"
+          dirty_branch!
 
           lambda{ GitTopic.done }.should raise_error
         end
