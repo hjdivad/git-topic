@@ -33,6 +33,14 @@ begin
       git work-on <topic>
 
       see README.rdoc for more (any) details.
+
+
+      To make use of bash autocompletion, you must do the following:
+
+        1.  Make sure you source share/completion.bash before you source git's completion.
+        2.  Optionally, copy git-topic-completion to your gem's bin directory.
+            This is to sidestep ruby issue 3465 which makes loading gems far too
+            slow for autocompletion.
     }
     gem.email = "git-topic@hjdivad.com"
     gem.homepage = "http://github.com/hjdivad/git-topic"

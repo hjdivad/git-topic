@@ -13,7 +13,10 @@ module GitTopic
   include GitTopic::Git
   include GitTopic::Naming
 
-  GlobalOptKeys = [ :verbose, :help, :verbose_given, :version ]
+  GlobalOptKeys = [
+    :verbose, :help, :verbose_given, :version, :completion_help,
+    :completion_help_given
+  ]
 
 
   class << self

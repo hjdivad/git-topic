@@ -1,0 +1,58 @@
+#!/usr/bin/ruby -w
+
+
+module GitTopic; end
+
+module GitTopic::Completion
+  class << self
+
+    def user
+      ENV['USER']
+    end
+
+    def branches
+      `git branch -a --no-color`.split( "\n" ).map do |l|
+        l.gsub( /->.*$/, '' )[ 2..-1 ]
+      end
+    end
+
+    def others_review_branches
+      branches.map do |b|
+        b =~ %r{^remotes/origin/review/(.*)} && $1
+      end.reject do |b|
+        b =~ %r{^#{user}/}
+      end.compact
+    end
+
+    def my_reject_review_and_local_wip_branches
+      branches.map do |b|
+        b =~ %r{^(wip)/#{user}/(.*)}                      ||
+        b =~ %r{^remotes/origin/(rejected)/#{user}/(.*)}  ||
+        b =~ %r{^remotes/origin/(review)/#{user}/(.*)}
+        suggestion = [$1,$2].compact.join("/")
+        suggestion unless suggestion.strip.empty?
+      end.compact
+    end
+
+    def complete
+      suggestions = 
+        case ARGV.shift
+        # TODO 2: if we let accept/reject take args, simply return
+        # others_review_branches here
+        when "accept"
+        when "reject"
+        when "done"
+          # nothing
+        when "work-on"
+          my_reject_review_and_local_wip_branches
+        when "review"
+          others_review_branches
+        end || []
+
+      suggestions.each{ |s| puts s }
+    end
+
+  end
+end
+
+GitTopic::Completion.complete

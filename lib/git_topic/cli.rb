@@ -35,9 +35,34 @@ module GitTopic
         ".cleanup
         version Version
 
-        opt :verbose,   "Verbose output, including complete traces on errors."
+        opt :verbose,   
+            "Verbose output, including complete traces on errors."
+        opt :completion_help,
+            "View instructions for setting up autocompletion."
+
         stop_on         SubCommands
       end
+
+
+      if global_opts[:completion_help]
+        root = File.expand_path( "#{File.dirname( __FILE__ )}/../.." )
+        completion_bash_file  = "#{root}/share/completion.bash"
+        completion_bin_file   = "#{root}/bin/git-topic-completion"
+        gem_bin_dir           = Gem.default_bindir
+        puts %Q{
+          To make use of bash autocompletion, you must do the following:
+
+            1.  Make sure you source #{completion_bash_file} before you source
+                git's completion.
+            2.  Optionally, copy #{completion_bin_file} to #{gem_bin_dir}.
+                This is to sidestep ruby issue 3465 which makes loading gems far too
+                slow for autocompletion.  For more information, see:
+
+                  http://redmine.ruby-lang.org/issues/show/3465
+        }.cleanup
+        exit 0
+      end
+
 
       cmd       = ARGV.shift
       cmd_opts  = Trollop::options do

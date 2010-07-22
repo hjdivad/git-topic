@@ -5,12 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{git-topic}
-  s.version = "0.1.6.4"
+  s.version = "0.1.6.5"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["David J. Hamilton"]
-  s.date = %q{2010-07-21}
-  s.default_executable = %q{git-topic}
+  s.date = %q{2010-07-22}
   s.description = %q{
       gem command around reviewed topic branches.  Supports workflow of the form:
 
@@ -33,9 +32,17 @@ Gem::Specification.new do |s|
       git work-on <topic>
 
       see README.rdoc for more (any) details.
+
+
+      To make use of bash autocompletion, you must do the following:
+
+        1.  Make sure you source share/completion.bash before you source git's completion.
+        2.  Optionally, copy git-topic-completion to your gem's bin directory.
+            This is to sidestep ruby issue 3465 which makes loading gems far too
+            slow for autocompletion.
     }
   s.email = %q{git-topic@hjdivad.com}
-  s.executables = ["git-topic"]
+  s.executables = ["git-topic", "git-topic-completion"]
   s.extra_rdoc_files = [
     "LICENSE",
      "README.rdoc"
@@ -48,6 +55,8 @@ Gem::Specification.new do |s|
      ".rvmrc",
      ".vimproject",
      ".vimrc",
+     ".vimspell.utf8.add",
+     ".vimspell.utf8.add.spl",
      "Gemfile",
      "Gemfile.lock",
      "History.txt",
@@ -56,16 +65,21 @@ Gem::Specification.new do |s|
      "Rakefile",
      "VERSION.yml",
      "autotest/discover.rb",
-     "bin/git-topic",
-     "git-topic",
-     "git-topic.gemspec",
      "lib/core_ext.rb",
      "lib/git_topic.rb",
      "lib/git_topic/cli.rb",
      "lib/git_topic/git.rb",
      "lib/git_topic/naming.rb",
      "lib/tasks/annotations.rake",
-     "spec/git_topic_spec.rb",
+     "share/completion.bash",
+     "spec/bash_completion.rb",
+     "spec/git_topic_accept_spec.rb",
+     "spec/git_topic_done_spec.rb",
+     "spec/git_topic_install_aliases_spec.rb",
+     "spec/git_topic_reject_spec.rb",
+     "spec/git_topic_review_spec.rb",
+     "spec/git_topic_status_spec.rb",
+     "spec/git_topic_work_on_spec.rb",
      "spec/spec_helper.rb",
      "spec/template/origin-fresh/HEAD",
      "spec/template/origin-fresh/RENAMED-REF",
@@ -146,8 +160,15 @@ Gem::Specification.new do |s|
   s.rubygems_version = %q{1.3.7}
   s.summary = %q{git command around reviewed topic branches}
   s.test_files = [
-    "spec/spec_helper.rb",
-     "spec/git_topic_spec.rb"
+    "spec/git_topic_reject_spec.rb",
+     "spec/spec_helper.rb",
+     "spec/git_topic_work_on_spec.rb",
+     "spec/git_topic_done_spec.rb",
+     "spec/bash_completion.rb",
+     "spec/git_topic_install_aliases_spec.rb",
+     "spec/git_topic_status_spec.rb",
+     "spec/git_topic_accept_spec.rb",
+     "spec/git_topic_review_spec.rb"
   ]
 
   if s.respond_to? :specification_version then

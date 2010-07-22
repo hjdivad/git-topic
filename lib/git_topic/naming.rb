@@ -32,7 +32,7 @@ module GitTopic::Naming
     end
 
     def strip_namespace( ref )
-      if ref =~ %r{(?:wip|rejected|review)/\S*/(.*)}
+      if ref =~ %r{(?:wip|rejected|review)/(?:(?:\S*)/)?(.*)}
         $1
       else
         ref
@@ -54,6 +54,8 @@ module GitTopic::Naming
       p = {}
       parts = ref.split( '/' )
       case parts.size
+      when 3
+        _, p[:user], p[:topic] = parts
       when 2
         p[:user], p[:topic] = parts
       when 1

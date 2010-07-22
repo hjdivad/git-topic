@@ -84,6 +84,14 @@ describe GitTopic do
         git_branch_merge.should         == 'refs/heads/review/user24601/ninja-basic'
       end
 
+      it "should handle fully-qualified topic args" do
+        git_remote_branches.should      include 'review/user24601/ninja-basic'
+        lambda{ GitTopic.review( 'review/user24601/ninja-basic' )}.should_not raise_error
+        git_branch.should               == 'review/user24601/ninja-basic'
+        git_branch_remote.should        == 'origin'
+        git_branch_merge.should         == 'refs/heads/review/user24601/ninja-basic'
+      end
+
       it "should error if an illegal topic is specified" do
         lambda{ GitTopic.review( 'fakeuser/faketopic' )}.should raise_error
       end

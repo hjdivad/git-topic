@@ -16,6 +16,12 @@ describe GitTopic do
         git_branch.should                       == "wip/davidjh/topic"
       end
 
+      it "should trim partial namespaces (with implicit ‘user’)" do
+        git_branch.should_not                   == "wip/davidjh/topic"
+        GitTopic.work_on "wip/topic"
+        git_branch.should                       == "wip/davidjh/topic"
+      end
+
     end
 
     describe "in fresh" do
