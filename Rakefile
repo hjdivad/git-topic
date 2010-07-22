@@ -46,6 +46,8 @@ begin
     gem.homepage = "http://github.com/hjdivad/git-topic"
     gem.authors = ["David J. Hamilton"]
 
+    gem.files.exclude 'git-topic'
+
     if File.exists? 'Gemfile'
       require 'bundler'
       bundler = Bundler.load
