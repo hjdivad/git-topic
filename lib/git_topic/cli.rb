@@ -44,8 +44,7 @@ module GitTopic
         case cmd
         when "work-on"
           banner "
-            git work-on <topic>
-            git-topic work-on <topic>
+            git[-topic] work-on <topic>
 
             Switches to a local work-in-progress (wip) branch for <topic>.  The
             branch (and a matching remote branch) is created if necessary.
@@ -61,8 +60,7 @@ module GitTopic
           ".cleanup
         when /done(-with)?/
           banner "
-            git done
-            git-topic done
+            git[-topic] done
 
             Indicate that this topic branch is ready for review.  Push to a
             remote review branch and switch back to master.
@@ -87,8 +85,7 @@ module GitTopic
                 :default => false
         when "review"
           banner "
-            git review [<topic>]
-            git-topic reivew [<topic>]
+            git[-topic] review [<topic>]
 
             Review <topic>.  If <topic> is unspecified, review the oldest (by HEAD) topic.
 
@@ -96,8 +93,7 @@ module GitTopic
           ".cleanup
         when "accept"
           banner "
-            git accept
-            git-topic accept
+            git[-topic] accept
 
             Accept the current in-review topic, merging it to master and
             cleaning up the remote branch.  This will fail if the branch does
@@ -108,8 +104,7 @@ module GitTopic
           ".cleanup
         when "reject"
           banner "
-            git reject
-            git-topic reject
+            git[-topic] reject
 
             Reject the current in-review topic.
 
