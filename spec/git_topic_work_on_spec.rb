@@ -11,15 +11,15 @@ describe GitTopic do
         should trim namespaces from args and output a warning
       ".oneline do
 
-        git_branch.should_not                   == "wip/davidjh/topic"
+        git_branch.should_not                   == "wip/#{@user}/topic"
         GitTopic.work_on "wip/#{@user}/topic"
-        git_branch.should                       == "wip/davidjh/topic"
+        git_branch.should                       == "wip/#{@user}/topic"
       end
 
       it "should trim partial namespaces (with implicit ‘user’)" do
-        git_branch.should_not                   == "wip/davidjh/topic"
+        git_branch.should_not                   == "wip/#{@user}/topic"
         GitTopic.work_on "wip/topic"
-        git_branch.should                       == "wip/davidjh/topic"
+        git_branch.should                       == "wip/#{@user}/topic"
       end
 
     end

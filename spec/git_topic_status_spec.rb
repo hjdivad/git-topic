@@ -12,7 +12,7 @@ describe GitTopic do
 
 
       it "should not show my review branches, but it should show others'" do
-        git_remote_branches.should      include 'review/davidjh/pirates'
+        git_remote_branches.should      include "review/#{@user}/pirates"
 
         GitTopic.status
         @output.should_not      be_nil
@@ -35,7 +35,7 @@ describe GitTopic do
       end
 
       it "should show my rejected topics" do
-        git_remote_branches.should      include 'rejected/davidjh/krakens'
+        git_remote_branches.should      include "rejected/#{@user}/krakens"
         GitTopic.status
         @output.should_not      be_nil
 
