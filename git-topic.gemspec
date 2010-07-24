@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{git-topic}
-  s.version = "0.1.6.5"
+  s.version = "0.2.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["David J. Hamilton"]
-  s.date = %q{2010-07-22}
+  s.date = %q{2010-07-23}
   s.description = %q{
       gem command around reviewed topic branches.  Supports workflow of the form:
 
@@ -68,12 +68,16 @@ Gem::Specification.new do |s|
      "lib/core_ext.rb",
      "lib/git_topic.rb",
      "lib/git_topic/cli.rb",
+     "lib/git_topic/comment.rb",
      "lib/git_topic/git.rb",
      "lib/git_topic/naming.rb",
      "lib/tasks/annotations.rake",
      "share/completion.bash",
      "spec/bash_completion.rb",
+     "spec/comment_spec.rb",
      "spec/git_topic_accept_spec.rb",
+     "spec/git_topic_comment_spec.rb",
+     "spec/git_topic_comments_spec.rb",
      "spec/git_topic_done_spec.rb",
      "spec/git_topic_install_aliases_spec.rb",
      "spec/git_topic_reject_spec.rb",
@@ -161,10 +165,13 @@ Gem::Specification.new do |s|
   s.summary = %q{git command around reviewed topic branches}
   s.test_files = [
     "spec/git_topic_reject_spec.rb",
+     "spec/comment_spec.rb",
+     "spec/git_topic_comment_spec.rb",
      "spec/spec_helper.rb",
      "spec/git_topic_work_on_spec.rb",
      "spec/git_topic_done_spec.rb",
      "spec/bash_completion.rb",
+     "spec/git_topic_comments_spec.rb",
      "spec/git_topic_install_aliases_spec.rb",
      "spec/git_topic_status_spec.rb",
      "spec/git_topic_accept_spec.rb",
