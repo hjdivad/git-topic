@@ -84,7 +84,7 @@ module GitTopic::Git
     end
 
     def git( cmds=[], opts={} )
-      opts.assert_valid_keys    :must_succeed
+      opts.assert_valid_keys    :must_succeed, :show
 
       cmds  = [cmds] if cmds.is_a? String
       redir = cmd_redirect_suffix( opts )

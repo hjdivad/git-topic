@@ -8,8 +8,7 @@ all work is written by an author, and reviewed by someone else.
 
 * git-topic has only been tested on debian flavours of linux.  Other unix-like
   environments should work.
-* git >= 1.7.1        (older versions may work, except for comment and comments
-                      commands)
+* git >= 1.7.1        (older versions may work, sans comment[s] commands)
 * ruby >= 1.9.2-rc1   (older versions may work)
 
 
