@@ -31,7 +31,9 @@ describe GitTopic do
 
         @output.clear
         GitTopic.status
-        @output.should_not              =~ %r{ninja-basic}
+        @output.should                  =~ %r{^\s*(#.*)}m
+        status_output                   = $1
+        status_output.should_not        =~ %r{ninja-basic}
       end
 
       it "

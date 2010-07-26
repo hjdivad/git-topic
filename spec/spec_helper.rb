@@ -113,8 +113,12 @@ Rspec.configure do |c|
     $stdout.stub!( :write ) { |*args| @output.<<( *args )}
     $stderr.stub!( :write ) { |*args| @err.<<( *args )}
   end
-
   c.after( :each ) { Dir.chdir @starting_dir }
+
+
+  c.before( :each ) do
+    GitTopic::global_opts[:verbose] = true
+  end
 end
 
 
