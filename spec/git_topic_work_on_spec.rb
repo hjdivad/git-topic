@@ -7,9 +7,7 @@ describe GitTopic do
 
     share_examples_for "#work_on general cases" do
 
-      it "
-        should trim namespaces from args and output a warning
-      ".oneline do
+      it "should trim namespaces for a user's wip branch".oneline do
 
         git_branch.should_not                   == "wip/#{@user}/topic"
         GitTopic.work_on "wip/#{@user}/topic"
@@ -61,6 +59,14 @@ describe GitTopic do
       after( :each )  { Dir.chdir( '..' )}
 
       it_should_behave_like "#work_on general cases"
+
+
+      it "should trim namespaces for a different user's wip branch" do
+
+        git_branch.should_not                   == "wip/user24601/pirates-with-hooks"
+        GitTopic.work_on "wip/user24601/pirates-with-hooks"
+        git_branch.should                       == "wip/user24601/pirates-with-hooks"
+      end
 
       it "should switch to (rather than create) an existing topic branch" do
         git_branches.should include( "wip/#{@user}/zombie-basic" )

@@ -10,8 +10,11 @@ module GitTopic::Naming
       "backup/#{user}/#{strip_namespace topic}"
     end
 
-    def wip_branch( topic )
-      "wip/#{user}/#{strip_namespace topic}"
+    def wip_branch( ref )
+      parts     = topic_parts( ref )
+      wip_user  = parts[:user] || user
+      topic     = parts[:topic]
+      "wip/#{wip_user}/#{topic}"
     end
 
     def rejected_branch( topic )
@@ -62,9 +65,10 @@ module GitTopic::Naming
       parts = ref.split( '/' )
       case parts.size
       when 3
-        _, p[:user], p[:topic] = parts
+        p[:namespace], p[:user], p[:topic] = parts
       when 2
-        p[:user], p[:topic] = parts
+        first_part = (parts.first =~ /(wip|review|rejected)/) ? :namespace : :user
+        p[ first_part ], p[:topic] = parts
       when 1
         p[:topic] = parts.first
       else

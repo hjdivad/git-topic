@@ -24,12 +24,13 @@ module GitTopic::Completion
       end.compact
     end
 
-    def my_reject_review_and_local_wip_branches
+    def my_reject_review_and_all_wip_branches
       branches.map do |b|
         b =~ %r{^(wip)/#{user}/(.*)}                      ||
         b =~ %r{^remotes/origin/(rejected)/#{user}/(.*)}  ||
         b =~ %r{^remotes/origin/(review)/#{user}/(.*)}
-        suggestion = [$1,$2].compact.join("/")
+        b =~ %r{^remotes/origin/(wip)/(\S*?)/(.*)}
+        suggestion = [$1,($2 unless $2 == user), $3].compact.join("/")
         suggestion unless suggestion.strip.empty?
       end.compact
     end
@@ -44,7 +45,7 @@ module GitTopic::Completion
         when "done"
           # nothing
         when "work-on"
-          my_reject_review_and_local_wip_branches
+          my_reject_review_and_all_wip_branches
         when "review"
           others_review_branches
         end || []
