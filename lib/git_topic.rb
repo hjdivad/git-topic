@@ -267,7 +267,8 @@ module GitTopic
         return
       end
 
-      git "log origin/master.. --show-notes=#{notes_ref} --no-standard-notes"
+      git "log origin/master.. --show-notes=#{notes_ref} --no-standard-notes",
+          :show => true
     end
 
 
