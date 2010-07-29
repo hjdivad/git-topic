@@ -5,6 +5,20 @@ describe GitTopic do
   
   describe "#done" do
 
+    describe "while on a branch with no local refs/notes" do
+      before( :each )   { use_repo 'in-progress' }
+      after( :each )    { Dir.chdir '..' }
+      
+      it "should not error on a missing refs/notes" do
+        File.exists?(
+          "./.git/refs/notes/reviews/"
+        ).should                                                == true
+        FileUtils.rm_rf "./.git/refs/notes/"
+        lambda{ GitTopic.work_on 'krakens' }.should_not         raise_error
+        lambda{ GitTopic.done }.should_not                      raise_error
+      end
+    end
+
     describe "in in-progress" do
 
       before( :each ) { use_repo 'in-progress' }
@@ -39,6 +53,55 @@ describe GitTopic do
           git_remote_branches.should_not  include( "wip/#{@user}/zombie-basic" )
           git_branch.should               == 'master'
         end
+
+        it "should push any replies to review comments" do
+          GitTopic.stub!( :invoke_git_editor ) do |path|
+            File.open( path, 'w' ) do |f|
+              f.puts %Q{
+                I have some general comments, mostly relating to the quality of our
+                zombie-control policies.  Basically, they're not working.
+              }.cleanup
+            end
+          end
+
+          File.open( 'zombies', 'a' ) do |f|
+            f.puts %Q{
+              # I suggest we do the following instead:
+              #     zombies.each{ |z| reason_with( z )}
+              #     zomies.select do |z|
+              #       z.unconvinced?
+              #     end.each do |z|
+              #       destroy z
+              #     end
+              # This should take care of our issues with zombies.
+            }.cleanup
+          end
+          GitTopic.should_receive( :invoke_git_editor ).once
+          GitTopic.should_receive(
+            :git_author_name_short
+          ).once.and_return( "Spec 123" )
+
+          File.exists?(
+            "../origin/refs/notes/reviews/#{@user}/krakens"
+          ).should                                == false
+
+          lambda do
+            GitTopic.work_on  'krakens'
+            cmd = [
+              "echo 'harder than you might think' >> kraken",
+              "git commit kraken -m 'working on krakens'",
+            ].join( " && " )
+            cmd << " 2> /dev/null > /dev/null"
+            system cmd
+            GitTopic.comment
+            GitTopic.done
+          end.should_not                          raise_error
+
+          File.exists?(
+            "../origin/refs/notes/reviews/#{@user}/krakens"
+          ).should                                == true
+        end
+
       end
 
       describe "with an argument" do

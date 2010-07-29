@@ -76,8 +76,13 @@ module GitTopic
 
       wb = wip_branch( topic )
       rb = review_branch( topic )
+      refspecs = [
+        "refs/heads/#{wb}:refs/heads/#{rb}",
+        ":refs/heads/#{wb}",
+        "refs/notes/reviews/*:refs/notes/reviews/*"
+      ].join( " " )
       git [
-        "push origin refs/heads/#{wb}:refs/heads/#{rb} :refs/heads/#{wb}",
+        "push origin #{refspecs}",
         ("checkout master" if strip_namespace( topic ) == current_topic),
         "branch -D #{wip_branch( topic )}"
       ].compact
@@ -301,6 +306,7 @@ module GitTopic
       refspecs = [
         "refs/heads/#{current_branch}:refs/heads/#{rem_rej_branch}",
         ":refs/heads/#{rem_review_branch}",
+        "refs/notes/reviews/*:refs/notes/reviews/*"
       ].join( " " )
       git [
         "checkout master",

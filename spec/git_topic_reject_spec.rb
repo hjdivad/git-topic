@@ -22,6 +22,22 @@ describe GitTopic do
   
   describe "#reject" do
 
+
+    describe "while on a review branch in a repo with no local refs/notes" do
+      before( :each )   { use_repo 'in-progress' }
+      after( :each )    { Dir.chdir '..' }
+
+      it "should not error on a missing refs/notes" do
+        File.exists?(
+          "./.git/refs/notes/reviews/"
+        ).should                                    == true
+        FileUtils.rm_rf "./.git/refs/notes/"
+        lambda{ GitTopic.review }.should_not        raise_error
+        lambda{ GitTopic.reject }.should_not        raise_error
+      end
+    end
+
+
     describe "while on a review branch" do
       before( :each ) do
         use_repo 'in-progress'
@@ -41,6 +57,47 @@ describe GitTopic do
           git_branches.should_not         include( 'review/user24601/zombie-basic' )
           git_remote_branches.should_not  include( 'review/user24601/zombie-basic' )
           git_remote_branches.should      include( 'rejected/user24601/zombie-basic' )
+        end
+
+        it "should push any review comments" do
+          GitTopic.stub!( :invoke_git_editor ) do |path|
+            File.open( path, 'w' ) do |f|
+              f.puts %Q{
+                I have some general comments, mostly relating to the quality of our
+                zombie-control policies.  Basically, they're not working.
+              }.cleanup
+            end
+          end
+
+          File.open( 'zombies', 'a' ) do |f|
+            f.puts %Q{
+              # I suggest we do the following instead:
+              #     zombies.each{ |z| reason_with( z )}
+              #     zomies.select do |z|
+              #       z.unconvinced?
+              #     end.each do |z|
+              #       destroy z
+              #     end
+              # This should take care of our issues with zombies.
+            }.cleanup
+          end
+          GitTopic.should_receive( :invoke_git_editor ).once
+          GitTopic.should_receive(
+            :git_author_name_short
+          ).once.and_return( "Spec 123" )
+
+          File.exists?(
+            "../origin/refs/notes/reviews/user24601/zombie-basic"
+          ).should                                == false
+
+          lambda do
+            GitTopic.comment
+            GitTopic.reject
+          end.should_not                          raise_error
+
+          File.exists?(
+            "../origin/refs/notes/reviews/user24601/zombie-basic"
+          ).should                                == true
         end
 
         it "should provide feedback to the user" do
