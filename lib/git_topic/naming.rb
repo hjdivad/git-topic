@@ -44,25 +44,20 @@ module GitTopic::Naming
 
 
     def notes_ref( branch=current_branch )
-      user, topic = user_topic_name( branch )
+      user, topic = user_topic_name( branch, :lookup => true )
       "refs/notes/reviews/#{user}/#{topic}"
     end
 
 
-    def user_topic_name( branch )
-      if branch =~ %r{^origin}
-        branch =~ %r{^\S*?/\S*?/(\S*?)/(\S*)}
-        [$1, $2]
-      elsif branch =~ %r{^(?:\S*/)?(\S*?)/(\S*)}
-        [$1, $2]
-      else
-        raise "Cannot compute user_topic for [#{branch}]"
-      end
+    def user_topic_name( ref, opts={} )
+      p = topic_parts( ref, opts )
+      [ p[:user], p[:topic ] ]
     end
 
-    def topic_parts( ref )
+    def topic_parts( ref, opts={} )
       p = {}
       parts = ref.split( '/' )
+      parts.shift if parts.first == "origin"
       case parts.size
       when 3
         p[:namespace], p[:user], p[:topic] = parts
@@ -74,6 +69,19 @@ module GitTopic::Naming
       else
         raise "Unexpected topic: #{ref}"
       end
+
+      if opts[:lookup] && p[:user].nil?
+        remote_branches_organized.find do |namespace, v|
+          v.find do |user, vv|
+            if vv.find{ |topic| topic == p[:topic] }
+              p[:user]        = user
+              p[:namespace]   = namespace
+              true
+            end
+          end
+        end
+      end
+
       p
     end
 
@@ -140,13 +148,6 @@ module GitTopic::Naming
         namespace_ut.symbolize_keys!
         namespace_ut[:review]   ||= {}
         namespace_ut[:rejected] ||= {}
-
-        namespace_ut[:rejected].each do |user, topics|
-          topics.map! do |topic|
-            suffix = " (reviewer comments) "
-            "#{topic}#{suffix if existing_comments?( "#{user}/#{topic}" )}"
-          end
-        end
 
         namespace_ut[:review].reject!{|k,v| k == user}
         namespace_ut

@@ -51,8 +51,9 @@ module GitTopic::Git
       not capture_git( "notes --ref #{ref} list" ).chomp.empty?
     end
 
-    def existing_comments
-      capture_git( "notes --ref #{notes_ref} show" ).chomp
+    def existing_comments( spec=nil )
+      ref = notes_ref( *[ spec ].compact )
+      capture_git( "notes --ref #{ref} show" ).chomp
     end
 
 

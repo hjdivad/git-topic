@@ -5,40 +5,106 @@ describe GitTopic do
 
   describe "#comments" do
 
-    describe "on a branch with no comments" do
+    describe "with an argument" do
 
-      before( :each ) do
-        use_repo            'in-progress'
-        GitTopic.work_on    'pirates-advanced'
-      end
-      after( :each )  { Dir.chdir '..' }
-
-      it "should report that there are no comments" do
-        lambda{ GitTopic.comments }.should_not      raise_error
-        @output.should_not                          be_nil
-        @output.should                              =~ /no comments/i
-      end
-    end
+      before( :each )   { use_repo 'in-progress' }
+      after( :each )    { Dir.chdir '..' }
 
 
-    describe "on a branch with comments" do
-
-      before( :each ) do
-        use_repo            'in-progress'
-        GitTopic.work_on    'krakens'
-      end
-
-      after( :each )  { Dir.chdir '..' }
-
-      it "should invoke git log to display the comments" do
+      it "shows comments for the supplied topic" do
+        git_branch.should                     == 'master'
         GitTopic.should_receive( :git ) do |cmd|
           cmd.should =~ /log/
           cmd.should =~ %r{origin/master\.\.}
           cmd.should =~ /--no-standard-notes/
           cmd.should =~ %r{--show-notes=refs/notes/reviews/#{@user}/krakens}
         end
+        GitTopic.comments 'krakens'
+      end
 
-        lambda{ GitTopic.comments }.should_not      raise_error
+      it "should strip fully qualified namespaces" do
+        git_branch.should                     == 'master'
+        GitTopic.should_receive( :git ) do |cmd|
+          cmd.should =~ /log/
+          cmd.should =~ %r{origin/master\.\.}
+          cmd.should =~ /--no-standard-notes/
+          cmd.should =~ %r{--show-notes=refs/notes/reviews/#{@user}/krakens}
+        end
+        GitTopic.comments "rejected/#{@user}/krakens"
+      end
+
+      it "should strip partially qualified namespaces" do
+        git_branch.should                     == 'master'
+        GitTopic.should_receive( :git ) do |cmd|
+          cmd.should =~ /log/
+          cmd.should =~ %r{origin/master\.\.}
+          cmd.should =~ /--no-standard-notes/
+          cmd.should =~ %r{--show-notes=refs/notes/reviews/#{@user}/krakens}
+        end
+        GitTopic.comments "#{@user}/krakens"
+      end
+
+      it "should strip fully qualified namespaces for other users" do
+        git_branch.should                     == 'master'
+        GitTopic.should_receive( :git ) do |cmd|
+          cmd.should =~ /log/
+          cmd.should =~ %r{origin/master\.\.}
+          cmd.should =~ /--no-standard-notes/
+          cmd.should =~ %r{--show-notes=refs/notes/reviews/user24601/ninja-basic}
+        end
+        GitTopic.comments "review/user24601/ninja-basic"
+      end
+
+      it "should strip partially qualified namespaces for other users" do
+        git_branch.should                     == 'master'
+        GitTopic.should_receive( :git ) do |cmd|
+          cmd.should =~ /log/
+          cmd.should =~ %r{origin/master\.\.}
+          cmd.should =~ /--no-standard-notes/
+          cmd.should =~ %r{--show-notes=refs/notes/reviews/user24601/ninja-basic}
+        end
+        GitTopic.comments "user24601/ninja-basic"
+      end
+
+    end
+
+    describe "with no argument" do
+
+      describe "on a branch with no comments" do
+
+        before( :each ) do
+          use_repo            'in-progress'
+          GitTopic.work_on    'pirates-advanced'
+        end
+        after( :each )  { Dir.chdir '..' }
+
+        it "should report that there are no comments" do
+          lambda{ GitTopic.comments }.should_not      raise_error
+          @output.should_not                          be_nil
+          @output.should                              =~ /no comments/i
+        end
+      end
+
+
+      describe "on a branch with comments" do
+
+        before( :each ) do
+          use_repo            'in-progress'
+          GitTopic.work_on    'krakens'
+        end
+
+        after( :each )  { Dir.chdir '..' }
+
+        it "should invoke git log to display the comments" do
+          GitTopic.should_receive( :git ) do |cmd|
+            cmd.should =~ /log/
+            cmd.should =~ %r{origin/master\.\.}
+            cmd.should =~ /--no-standard-notes/
+            cmd.should =~ %r{--show-notes=refs/notes/reviews/#{@user}/krakens}
+          end
+
+          lambda{ GitTopic.comments }.should_not      raise_error
+        end
       end
     end
 

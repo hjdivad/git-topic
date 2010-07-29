@@ -161,11 +161,11 @@ module GitTopic
                 ".oneline
         when "comments"
           banner "
-            git[-topic] comments
+            git[-topic] comments [<topic>]
 
-            View the comments for the current topic.  If your branch was
-            rejected, you should read these comments so you know what to do to
-            appease the reviewer.
+            View the comments for <topic>, which defaults to the current topic.
+            If your branch was rejected, you should read these comments so you
+            know what to do to appease the reviewer.
 
             Options:
           ".cleanup
@@ -243,7 +243,8 @@ module GitTopic
       when "comment"
         comment           opts
       when "comments"
-        comments          opts
+        spec              = ARGV.shift
+        comments          spec, opts
       when "accept"
         topic             = ARGV.shift
         accept            topic, opts

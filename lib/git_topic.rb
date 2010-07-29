@@ -124,7 +124,11 @@ module GitTopic
         end.join( "\n" )
       end
 
-      rejected_topics = rejected_ut[ user ] || []
+      rejected_topics = (rejected_ut[ user ] || []).dup
+      rejected_topics.map! do |topic|
+        suffix = " (reviewer comments) "
+        "#{topic}#{suffix if existing_comments?( "#{user}/#{topic}" )}"
+      end
       unless rejected_topics.empty?
         sb << "\n" unless review_ut.empty?
         verb = rejected_topics.size  == 1 ? 'is' : 'are'
@@ -266,13 +270,14 @@ module GitTopic
       report "Your comments have been saved."
     end
 
-    def comments( opts={} )
-      unless existing_comments?
+    def comments( spec=nil, opts={} )
+      args = [ spec ].compact
+      unless existing_comments? *args
         puts "There are no comments on this branch."
         return
       end
 
-      git "log origin/master.. --show-notes=#{notes_ref} --no-standard-notes",
+      git "log origin/master.. --show-notes=#{notes_ref *args} --no-standard-notes",
           :show => true
     end
 
