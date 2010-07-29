@@ -221,6 +221,8 @@ module GitTopic
         end
       end
 
+      check_for_setup unless cmd == "setup"
+
       opts = global_opts.merge( cmd_opts )
       display_git_output! if opts[:verbose]
 
@@ -253,6 +255,8 @@ module GitTopic
         reject            topic, opts
       when "install-aliases"
         install_aliases   opts
+      when "setup"
+        setup             opts
       end
     rescue => error
       puts "Error: #{error.message}"

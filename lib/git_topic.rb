@@ -323,6 +323,15 @@ module GitTopic
     end
 
 
+    # Setup .git/config.
+    #
+    # This amounts to setting up refspecs for origin fetching for review
+    # comments.
+    def setup( opts={} )
+      return if has_setup_refspec?
+      git "config --add remote.origin.fetch refs/notes/reviews/*:refs/notes/reviews/*"
+    end
+
     def install_aliases( opts={} )
       opts.assert_valid_keys  :local, :local_given, *GlobalOptKeys
 
@@ -358,6 +367,37 @@ module GitTopic
       else
         error_msg ||= "Error running command.  re-run with --verbose for details"
         raise error_msg
+      end
+    end
+
+
+    def check_for_setup
+      git_dir = `git rev-parse --git-dir 2> /dev/null`.chomp
+      return if git_dir.empty?
+
+      suppress_whine = `git config topic.checkForNotesRef`.chomp == "false"
+      return if suppress_whine
+
+      unless has_setup_refspec?
+        STDERR.puts "
+          Warning: git repository is not set up for git topic.  Review comments
+          will not automatically be pulled on git fetch.  You have two options
+          for suppressing this message:
+
+          1.  Run git-topic setup to setup fetch refspecs for origin.
+          2.  Run git config topic.checkForNotesRef false.
+              If you do this, you can manually fetch reviewers' comments with
+              the following command
+
+                  git fetch origin refs/notes/reviews/*:refs/notes/reviews/*
+        ".cleanup
+      end
+    end
+
+    def has_setup_refspec?
+      fetch_refspecs = capture_git( "config --get-all remote.origin.fetch" ).split( "\n" )
+      fetch_refspecs.any? do |refspec|
+        refspec == "refs/notes/reviews/*:refs/notes/reviews/*"
       end
     end
 
