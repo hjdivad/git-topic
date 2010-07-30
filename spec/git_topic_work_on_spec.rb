@@ -24,7 +24,6 @@ describe GitTopic do
 
     describe "in fresh" do
       before( :each ) { use_repo( 'fresh' )}
-      after( :each )  { Dir.chdir( '..' )}
 
       it_should_behave_like "#work_on general cases"
 
@@ -56,7 +55,6 @@ describe GitTopic do
     describe "in in-progress" do
 
       before( :each ) { use_repo( 'in-progress' )}
-      after( :each )  { Dir.chdir( '..' )}
 
       it_should_behave_like "#work_on general cases"
 

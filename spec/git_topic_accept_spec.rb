@@ -10,7 +10,6 @@ describe GitTopic do
         use_repo 'in-progress'
         GitTopic.review 'user24601/zombie-basic'
       end
-      after( :each ) { Dir.chdir '..' }
 
       describe "with no specified argument" do
         it "
@@ -52,7 +51,6 @@ describe GitTopic do
         @original_git_Head    = git_head
         GitTopic.review 'user24601/zombie-basic'
       end
-      after( :each ) { Dir.chdir '..' }
 
       it "should refuse to accept the review branch" do
         git_branch.should                 == 'review/user24601/zombie-basic'
@@ -67,7 +65,6 @@ describe GitTopic do
 
     describe "while not on a review branch" do
       before( :each ) { use_repo 'in-progress' }
-      after( :each ) { Dir.chdir '..' }
 
       it "should fail" do
         lambda{ GitTopic.accept }.should    raise_error

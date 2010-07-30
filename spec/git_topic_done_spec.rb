@@ -7,7 +7,6 @@ describe GitTopic do
 
     describe "while on a branch with no local refs/notes" do
       before( :each )   { use_repo 'in-progress' }
-      after( :each )    { Dir.chdir '..' }
       
       it "should not error on a missing refs/notes" do
         File.exists?(
@@ -22,7 +21,6 @@ describe GitTopic do
     describe "in in-progress" do
 
       before( :each ) { use_repo 'in-progress' }
-      after( :each )  { Dir.chdir '..' }
 
       describe "without an argument" do
 

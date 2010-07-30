@@ -3,6 +3,7 @@
 require 'fileutils'
 
 require 'git_topic'
+require 'git_topic/cli'
 
 
 # Testing-specific monkeypatching # {{{
@@ -105,7 +106,7 @@ Rspec.configure do |c|
       end
       Dir.chdir @starting_dir
     end
-    Dir.chdir         './tmp'
+    Dir.chdir         "#{@starting_dir}/tmp"
 
     # capture output
     @output         = ''
@@ -127,9 +128,13 @@ end
 def use_repo( repo )
   Dir.chdir( repo )
   # Exit if e.g. GIT_DIR is set
-  raise "Spec error" unless `git rev-parse --git-dir`.chomp == '.git'
+  raise "Spec error" unless git_dir == '.git'
 end
 
+
+def git_dir
+  `git rev-parse --git-dir 2> /dev/null`.chomp
+end
 
 def git_branch
   all_branches    = `git branch --no-color`.split( "\n" )
@@ -188,6 +193,15 @@ end
 def dirty_branch!
   File.open( 'dirty', 'w' ){|f| f.puts "some content" }
   system "git add -N dirty"
+end
+
+
+def with_argv( val )
+  restore = ARGV.dup
+  ARGV.replace( val )
+  rv = yield
+  ARGV.replace( restore )
+  rv
 end
 
 # }}}

@@ -7,7 +7,6 @@ describe GitTopic do
 
     describe "with no review branches" do
       before( :each ) { use_repo 'fresh' }
-      after( :each )  { Dir.chdir '..' }
 
       it "should report that there is nothing to do" do
         git_remote_branches.each do |b|
@@ -29,7 +28,6 @@ describe GitTopic do
           end
         end
       end
-      after( :each ) { Dir.chdir '..' }
 
       it "should switch to the sole review branch when given no arguments." do
         git_remote_branches.select do |branch|
@@ -44,7 +42,6 @@ describe GitTopic do
 
     describe "with some review branches" do
       before( :each ) { use_repo 'in-progress' }
-      after( :each )  { Dir.chdir '..' }
 
       it "
         should create a local tracking branch for the oldest remote review

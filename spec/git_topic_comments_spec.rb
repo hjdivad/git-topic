@@ -8,7 +8,6 @@ describe GitTopic do
     describe "with an argument" do
 
       before( :each )   { use_repo 'in-progress' }
-      after( :each )    { Dir.chdir '..' }
 
 
       it "shows comments for the supplied topic" do
@@ -76,7 +75,6 @@ describe GitTopic do
           use_repo            'in-progress'
           GitTopic.work_on    'pirates-advanced'
         end
-        after( :each )  { Dir.chdir '..' }
 
         it "should report that there are no comments" do
           lambda{ GitTopic.comments }.should_not      raise_error
@@ -93,7 +91,6 @@ describe GitTopic do
           GitTopic.work_on    'krakens'
         end
 
-        after( :each )  { Dir.chdir '..' }
 
         it "should invoke git log to display the comments" do
           GitTopic.should_receive( :git ) do |cmd|

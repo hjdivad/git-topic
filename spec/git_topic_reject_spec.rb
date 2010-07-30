@@ -25,7 +25,6 @@ describe GitTopic do
 
     describe "while on a review branch in a repo with no local refs/notes" do
       before( :each )   { use_repo 'in-progress' }
-      after( :each )    { Dir.chdir '..' }
 
       it "should not error on a missing refs/notes" do
         File.exists?(
@@ -43,7 +42,6 @@ describe GitTopic do
         use_repo 'in-progress'
         GitTopic.review 'user24601/zombie-basic'
       end
-      after( :each ) { Dir.chdir '..' }
 
       describe "with no specified argument" do
         it "
@@ -157,7 +155,6 @@ describe GitTopic do
     
     describe "while not on a review branch" do
       before( :each ) { use_repo 'in-progress' }
-      after( :each ) { Dir.chdir '..' }
 
       it "should fail" do
         lambda{ GitTopic.reject }.should    raise_error

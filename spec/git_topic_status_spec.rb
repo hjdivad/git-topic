@@ -8,7 +8,6 @@ describe GitTopic do
     describe "with pending review branches" do
 
       before( :each ) { use_repo 'in-progress' }
-      after( :each )  { Dir.chdir '..' }
 
 
       it "should not show my review branches, but it should show others'" do
@@ -52,7 +51,6 @@ describe GitTopic do
 
     describe "passed the --prepended flag" do
       before( :each ) { use_repo 'in-progress' }
-      after( :each )  { Dir.chdir '..' }
 
       it "should invoke git status before producing its output" do
         GitTopic.status( :prepended => true )

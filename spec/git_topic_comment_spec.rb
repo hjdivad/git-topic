@@ -125,7 +125,6 @@ describe GitTopic do
         use_repo 'in-progress' 
         GitTopic.review 'user24601/zombie-basic'
       end
-      after( :each )  { Dir.chdir '..' }
 
 
       it "should fail if the diff includes added lines not prefixed with #" do
@@ -249,7 +248,6 @@ describe GitTopic do
           end
         end
       end
-      after( :each )  { Dir.chdir '..' }
 
 
       it "should fail if the working tree is dirty" do
@@ -326,7 +324,6 @@ describe GitTopic do
 
     describe "on a wip branch with no comments" do
       before( :each ) { use_repo 'in-progress' }
-      after( :each )  { Dir.chdir '..' }
 
       it "should report that there is nothing to do" do
         GitTopic.work_on 'pirates-advanced'
@@ -351,7 +348,6 @@ describe GitTopic do
           end
         end
       end
-      after( :each )  { Dir.chdir '..' }
 
 
       it "should fail if the working tree is dirty" do
