@@ -35,6 +35,14 @@ module GitTopic::Completion
       end.compact
     end
 
+    def all_reject_and_review_branches
+      branches.map do |b|
+        b =~ %r{^remotes/origin/(rejected|review)/(\S*)/(.*)}
+        suggestion = [$1,($2 unless $2 == user), $3].compact.join("/")
+        suggestion unless suggestion.strip.empty?
+      end.compact
+    end
+
     def complete
       suggestions = 
         case ARGV.shift
@@ -42,8 +50,11 @@ module GitTopic::Completion
         # others_review_branches here
         when "accept"
         when "reject"
+        when "comment"
         when "done"
           # nothing
+        when "comments"
+          all_reject_and_review_branches
         when "work-on"
           my_reject_review_and_all_wip_branches
         when "review"

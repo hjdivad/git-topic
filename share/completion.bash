@@ -26,3 +26,13 @@ _git_reject() {
   __gitcomp "$(git-topic-completion reject 2> /dev/null)"
   return
 }
+
+_git_comment() {
+  __gitcomp "$(git-topic-completion comment 2> /dev/null)"
+  return
+}
+
+_git_comments() {
+  __gitcomp "$(git-topic-completion comments 2> /dev/null)"
+  return
+}
