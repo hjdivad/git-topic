@@ -26,9 +26,8 @@ module GitTopic::Completion
 
     def my_reject_review_and_all_wip_branches
       branches.map do |b|
-        b =~ %r{^(wip)/#{user}/(.*)}                      ||
         b =~ %r{^remotes/origin/(rejected)/#{user}/(.*)}  ||
-        b =~ %r{^remotes/origin/(review)/#{user}/(.*)}
+        b =~ %r{^remotes/origin/(review)/#{user}/(.*)}    ||
         b =~ %r{^remotes/origin/(wip)/(\S*?)/(.*)}
         suggestion = [$1,($2 unless $2 == user), $3].compact.join("/")
         suggestion unless suggestion.strip.empty?
