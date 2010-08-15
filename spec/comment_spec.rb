@@ -394,3 +394,4 @@ describe GitTopic::Comment do
   end
 
 end
+

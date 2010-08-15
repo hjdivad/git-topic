@@ -1,4 +1,8 @@
-=== 1.0.0 / 2010-03-05
+=== 0.2.3.4
+
+* issue 10 closed (comments did not survive rebase).
+
+=== 0.1.0 / 2010-03-05
 
 * 1 major enhancement
 

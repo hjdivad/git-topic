@@ -325,11 +325,22 @@ module GitTopic
 
     # Setup .git/config.
     #
-    # This amounts to setting up refspecs for origin fetching for review
-    # comments.
+    # This means setting up:
+    #   1. refspecs for origin fetching for review comments.
+    #   2. notes.rewriteRef for copying review comments on rebase.
+    #
     def setup( opts={} )
-      return if has_setup_refspec?
-      git "config --add remote.origin.fetch refs/notes/reviews/*:refs/notes/reviews/*"
+      cmds = []
+
+      cmds <<(
+        "config --add remote.origin.fetch refs/notes/reviews/*:refs/notes/reviews/*"
+      ) unless has_setup_refspec?
+
+      cmds <<(
+        "config --add notes.rewriteRef refs/notes/reviews/*"
+      ) unless has_setup_notes_rewrite?
+
+      git cmds.compact
     end
 
     def install_aliases( opts={} )
@@ -378,18 +389,26 @@ module GitTopic
       suppress_whine = `git config topic.checkForNotesRef`.chomp == "false"
       return if suppress_whine
 
-      unless has_setup_refspec?
+      unless has_setup_refspec? && has_setup_notes_rewrite?
         STDERR.puts "
           Warning: git repository is not set up for git topic.  Review comments
-          will not automatically be pulled on git fetch.  You have two options
-          for suppressing this message:
+          will not automatically be pulled on git fetch and will not be copied
+          on a rebase.  You have two options for suppressing this message:
 
-          1.  Run git-topic setup to setup fetch refspecs for origin.
+          1.  Run git-topic setup to setup fetch refspecs for origin and
+              comments copying on rebase.
+
           2.  Run git config topic.checkForNotesRef false.
               If you do this, you can manually fetch reviewers' comments with
               the following command
 
                   git fetch origin refs/notes/reviews/*:refs/notes/reviews/*
+
+              Similarly, you can ensure your comments are not lost on rebase by running
+
+                GIT_NOTES_REWRITE_REF=refs/notes/reviews/* git rebase
+
+              instead of `git rebase`
         ".cleanup
       end
     end
@@ -398,6 +417,13 @@ module GitTopic
       fetch_refspecs = capture_git( "config --get-all remote.origin.fetch" ).split( "\n" )
       fetch_refspecs.any? do |refspec|
         refspec == "refs/notes/reviews/*:refs/notes/reviews/*"
+      end
+    end
+
+    def has_setup_notes_rewrite?
+      notes_rewrites = capture_git( "config --get-all notes.rewriteRef" ).split( "\n" )
+      notes_rewrites.any? do |refs|
+        refs == "refs/notes/reviews/*"
       end
     end
 
