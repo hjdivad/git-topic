@@ -1,0 +1,15 @@
+====  0.2.4.1
+
+* issue 14 closed. Added --completion-help like output to
+  +post_install_message+.  Also updated the message to simply tell the user to
+  install with --no-wrappers.
+
+===   0.2.4
+
+* issue 10 closed. Comments did not survive rebase.
+
+==    0.1.0 / 2010-03-05
+
+* 1 major enhancement
+  * Birthday!
+

@@ -161,6 +161,19 @@ Gem::Specification.new do |s|
      "spec/template/origin/refs/heads/wip/user24601/pirates-with-hooks"
   ]
   s.homepage = %q{http://github.com/hjdivad/git-topic}
+  s.post_install_message = %q{
+      To make use of bash autocompletion, you must do the following:
+
+        1.  Make sure you source GIT_TOPIC_GEM/share/completion.bash before you
+            source git's completion.
+
+        2.  Optionally, install git-topic with the --no-wrappers option.
+            This is to sidestep ruby issue 3465 which makes loading gems
+            through the generated wrapper far too slow for autocompletion.
+            For more information, see:
+
+              http://redmine.ruby-lang.org/issues/show/3465
+    }
   s.rdoc_options = ["--charset=UTF-8"]
   s.require_paths = ["lib"]
   s.rubygems_version = %q{1.3.7}

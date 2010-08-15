@@ -46,6 +46,20 @@ begin
     gem.homepage = "http://github.com/hjdivad/git-topic"
     gem.authors = ["David J. Hamilton"]
 
+    gem.post_install_message = %Q{
+      To make use of bash autocompletion, you must do the following:
+
+        1.  Make sure you source GIT_TOPIC_GEM/share/completion.bash before you
+            source git's completion.
+
+        2.  Optionally, install git-topic with the --no-wrappers option.
+            This is to sidestep ruby issue 3465 which makes loading gems
+            through the generated wrapper far too slow for autocompletion.
+            For more information, see:
+
+              http://redmine.ruby-lang.org/issues/show/3465
+    }
+
     gem.files.exclude 'git-topic'
 
     if File.exists? 'Gemfile'

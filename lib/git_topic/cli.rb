@@ -49,16 +49,17 @@ module GitTopic
       if global_opts[:completion_help]
         root = File.expand_path( "#{File.dirname( __FILE__ )}/../.." )
         completion_bash_file  = "#{root}/share/completion.bash"
-        completion_bin_file   = "#{root}/bin/git-topic-completion"
-        gem_bin_dir           = Gem.default_bindir
         puts %Q{
           To make use of bash autocompletion, you must do the following:
 
-            1.  Make sure you source #{completion_bash_file} before you source
-                git's completion.
-            2.  Optionally, copy #{completion_bin_file} to #{gem_bin_dir}.
-                This is to sidestep ruby issue 3465 which makes loading gems far too
-                slow for autocompletion.  For more information, see:
+            1.  Make sure you source
+                  #{completion_bash_file}
+                before you source git's completion.
+
+            2.  Optionally, install git-topic with the --no-wrappers option.
+                This is to sidestep ruby issue 3465 which makes loading gems
+                through the generated wrapper far too slow for autocompletion.
+                For more information, see:
 
                   http://redmine.ruby-lang.org/issues/show/3465
         }.cleanup
