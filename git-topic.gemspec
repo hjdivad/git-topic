@@ -5,7 +5,7 @@
 
 Gem::Specification.new do |s|
   s.name = %q{git-topic}
-  s.version = "0.2.4"
+  s.version = "0.2.4.1"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["David J. Hamilton"]
@@ -59,7 +59,7 @@ Gem::Specification.new do |s|
      ".vimspell.utf8.add.spl",
      "Gemfile",
      "Gemfile.lock",
-     "History.txt",
+     "History.rdoc",
      "LICENSE",
      "README.rdoc",
      "Rakefile",
