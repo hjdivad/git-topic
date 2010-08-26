@@ -333,7 +333,7 @@ module GitTopic
       cmds = []
 
       cmds <<(
-        "config --add remote.origin.fetch refs/notes/reviews/*:refs/notes/reviews/*"
+        "config --add remote.origin.fetch +refs/notes/reviews/*:refs/notes/reviews/*"
       ) unless has_setup_refspec?
 
       cmds <<(
@@ -412,7 +412,7 @@ module GitTopic
     def has_setup_refspec?
       fetch_refspecs = capture_git( "config --get-all remote.origin.fetch" ).split( "\n" )
       fetch_refspecs.any? do |refspec|
-        refspec == "refs/notes/reviews/*:refs/notes/reviews/*"
+        refspec == "+refs/notes/reviews/*:refs/notes/reviews/*"
       end
     end
 

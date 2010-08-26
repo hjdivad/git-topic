@@ -11,7 +11,7 @@ describe GitTopic do
 
       %x{ 
         git config --get-all remote.origin.fetch
-      }.should_not                            =~ %r{refs/notes}
+      }.should_not                            =~ %r{\+refs/notes}
 
       GitTopic.setup
 
