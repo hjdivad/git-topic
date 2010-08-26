@@ -356,10 +356,6 @@ module GitTopic
         "config #{flags} alias.reject   'topic reject'",
         "config #{flags} alias.comment  'topic comment'",
         "config #{flags} alias.comments 'topic comments'",
-
-        "config #{flags} alias.w        'topic work-on'",
-        "config #{flags} alias.r        'topic review'",
-        "config #{flags} alias.st       'topic status --prepended'",
       ]
 
       report  "Aliases installed Successfully.",
