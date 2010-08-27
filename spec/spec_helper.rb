@@ -16,7 +16,8 @@ class << GitTopic
 
     define_method( "#{m}_with_nocache" ) do
       rv = send( "#{m}_without_nocache" )
-      GitTopic::Naming::ClassMethods.class_variable_set( "@@#{m}", nil )
+      GitTopic::Naming::ClassMethods.class_variable_set(  "@@#{m}", nil )
+      GitTopic::Git::ClassMethods.class_variable_set(     "@@#{m}", nil )
       rv
     end
     alias_method_chain m.to_sym, :nocache

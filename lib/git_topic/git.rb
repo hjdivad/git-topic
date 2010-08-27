@@ -56,6 +56,19 @@ module GitTopic::Git
       capture_git( "notes --ref #{ref} show" ).chomp
     end
 
+    def current_branch
+      @@current_branch ||= capture_git( "branch --no-color" ).split( "\n" ).find do |b|
+        b =~ %r{^\*}
+      end[ 2..-1 ]
+      @@current_branch = nil if @@current_branch == '(no branch)'
+
+      @@current_branch
+    end
+
+    def guess_branch
+      capture_git( "name-rev --name-only HEAD" )
+    end
+
 
     def display_git_output?
       @@display_git_output ||= false

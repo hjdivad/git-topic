@@ -277,6 +277,23 @@ module GitTopic
 
     def comments( spec=nil, opts={} )
       args = [ spec ].compact
+      if args.empty? && current_branch.nil?
+        if guess = guess_branch
+          args << guess_branch
+
+          puts "
+            You are not on a branch and no topic branch was specified.  Using
+            alternate name for HEAD, #{guess}.
+          ".oneline
+        else
+          puts "
+            You are not on a branch and no topic branch was specified.  I could
+            not find an appropriate name for HEAD to guess.
+          "
+          return
+        end
+
+      end
       unless existing_comments? *args
         puts "There are no comments on this branch."
         return

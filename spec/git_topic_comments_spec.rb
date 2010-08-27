@@ -103,6 +103,32 @@ describe GitTopic do
           lambda{ GitTopic.comments }.should_not      raise_error
         end
       end
+
+      describe "on a commit named by a topic branch with comments" do
+
+        before( :each ) do
+          use_repo        'in-progress'
+          system          "git checkout origin/rejected/#{@user}/krakens > /dev/null 2> /dev/null"
+        end
+
+        it "should report the topic it's guessing to look for comments on" do
+          lambda{ GitTopic.comments }.should_not      raise_error
+          @output.should                              =~ /no topic branch/i
+          @output.should                              =~ /krakens/i
+        end
+
+        it "should guess a topic and show its comments" do
+          GitTopic.should_receive( :git ) do |cmd|
+            cmd.should =~ /log/
+            cmd.should =~ %r{origin/master\.\.}
+            cmd.should =~ /--no-standard-notes/
+            cmd.should =~ %r{--show-notes=refs/notes/reviews/#{@user}/krakens}
+          end
+
+          lambda{ GitTopic.comments }.should_not      raise_error
+        end
+
+      end
     end
 
   end

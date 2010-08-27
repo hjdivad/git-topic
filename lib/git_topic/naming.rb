@@ -57,7 +57,10 @@ module GitTopic::Naming
     def topic_parts( ref, opts={} )
       p = {}
       parts = ref.split( '/' )
+
+      parts.shift if parts.first == 'remotes'
       parts.shift if parts.first == "origin"
+
       case parts.size
       when 3
         p[:namespace], p[:user], p[:topic] = parts
@@ -98,12 +101,6 @@ module GitTopic::Naming
     def current_topic
       current_branch =~ %r{wip/\S*?/(\S*)}
       $1
-    end
-
-    def current_branch
-      @@current_branch ||= capture_git( "branch --no-color" ).split( "\n" ).find do |b|
-        b =~ %r{^\*}
-      end[ 2..-1 ]
     end
 
     def branches
