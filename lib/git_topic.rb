@@ -292,14 +292,15 @@ module GitTopic
           "
           return
         end
-
       end
+
       unless existing_comments? *args
         puts "There are no comments on this branch."
         return
       end
 
-      git "log origin/master.. --show-notes=#{notes_ref *args} --no-standard-notes",
+      range = "origin/master..#{remote_branch *args}"
+      git "log #{range} --show-notes=#{notes_ref *args} --no-standard-notes",
           :show => true
     end
 

@@ -95,7 +95,7 @@ describe GitTopic do
         it "should invoke git log to display the comments" do
           GitTopic.should_receive( :git ) do |cmd|
             cmd.should =~ /log/
-            cmd.should =~ %r{origin/master\.\.}
+            cmd.should =~ %r{origin/master\.\.origin/wip/#{@user}/krakens}
             cmd.should =~ /--no-standard-notes/
             cmd.should =~ %r{--show-notes=refs/notes/reviews/#{@user}/krakens}
           end

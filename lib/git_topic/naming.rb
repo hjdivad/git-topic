@@ -29,6 +29,18 @@ module GitTopic::Naming
       "rejected/#{user}/#{strip_namespace topic}"
     end
 
+    def remote_branch( spec=current_branch )
+      parts = topic_parts( spec )
+
+      remote_branches.find do |remote_branch|
+        bp = topic_parts( remote_branch )
+
+        parts.all? do |part, value|
+          bp[part] == value
+        end
+      end
+    end
+
 
     def find_remote_review_branch( topic )
       others_review_branches.find{|b| b.index topic}
