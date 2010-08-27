@@ -247,10 +247,17 @@ module GitTopic::Comment
                             notes,
                             content,
                             :author => git_author_name_short )
-      
+
       File.open( edit_file, 'w' ){ |f| f.write( notes_with_reply )}
-      git "notes --ref #{notes_ref} edit -F #{edit_file}",
-          :must_succeed => true
+
+
+      if notes_with_reply != notes
+        git "notes --ref #{notes_ref} edit -F #{edit_file}",
+            :must_succeed => true
+      else
+        # No comments to add.
+        return false
+      end
     end
 
     def attrib( author, indent=0, max_w=16 )

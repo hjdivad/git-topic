@@ -233,25 +233,10 @@ module GitTopic
 
       diff_empty          = git( "diff --diff-filter=M --quiet" ) && $?.success?
 
-      case current_namespace
-      when "wip"
-        if existing_comments?
-          raise "
-            diff → comments not allowed when replying.  Please make sure your
-            working tree is completely clean and then invoke git-topic comment
-            again.
-          ".oneline unless diff_empty
-
-          notes_from_reply_to_comments
-        else
-          puts "No comments to reply to.  See git-topic comment --help for usage."
-          return
-        end
-      when "review"
-        if existing_comments?
-          if opts[ :force_update ]
-            notes_from_initial_comments( "edit" )
-          else
+      added_comments = 
+        case current_namespace
+        when "wip"
+          if existing_comments?
             raise "
               diff → comments not allowed when replying.  Please make sure your
               working tree is completely clean and then invoke git-topic comment
@@ -259,15 +244,35 @@ module GitTopic
             ".oneline unless diff_empty
 
             notes_from_reply_to_comments
+          else
+            puts "No comments to reply to.  See git-topic comment --help for usage."
+            return
+          end
+        when "review"
+          if existing_comments?
+            if opts[ :force_update ]
+              notes_from_initial_comments( "edit" )
+            else
+              raise "
+                diff → comments not allowed when replying.  Please make sure your
+                working tree is completely clean and then invoke git-topic comment
+                again.
+              ".oneline unless diff_empty
+
+              notes_from_reply_to_comments
+            end
+          else
+            notes_from_initial_comments
           end
         else
-          notes_from_initial_comments
+          raise "Inappropriate namespace for comments: [#{namespace}]"
         end
-      else
-        raise "Inappropriate namespace for comments: [#{namespace}]"
-      end
 
-      report "Your comments have been saved."
+      if added_comments
+        report "Your comments have been saved."
+      else
+        report "You did not write any comments.  Nothing to save."
+      end
     end
 
     def comments( spec=nil, opts={} )

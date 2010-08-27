@@ -319,6 +319,46 @@ describe GitTopic do
           "refs/notes/reviews/user24601/ninja-basic"
         ).should                                        == SecondComment
       end
+
+      it "should report success to the user" do
+        GitTopic.should_receive( :invoke_git_editor ).once
+        GitTopic.should_receive(
+          :git_author_name_short
+        ).once.and_return( "Spec 123" )
+
+        lambda{ GitTopic.comment }.should_not           raise_error
+        @output.should                                  =~ /comments have been saved/i
+      end
+
+      it "should fail (and report the failure) if the user entered no comments" do
+        git_notes_list(
+          "refs/notes/reviews/user24601/ninja-basic"
+        ).should_not                                    be_empty
+        git_notes_show(
+          "refs/notes/reviews/user24601/ninja-basic"
+        ).should                                        == FirstComment
+
+        GitTopic.stub!( :invoke_git_editor ) do |path|
+          File.open( path, 'w' ) do |f|
+            f.write FirstComment.lines.map{ |l| "# #{l}" }.join
+          end
+        end
+        GitTopic.should_receive( :invoke_git_editor ).once
+        GitTopic.should_receive(
+          :git_author_name_short
+        ).once.and_return( "Spec 123" )
+
+        lambda{ GitTopic.comment }.should_not           raise_error
+        git_notes_list(
+          "refs/notes/reviews/user24601/ninja-basic"
+        ).should_not                                    be_empty
+
+        git_notes_show(
+          "refs/notes/reviews/user24601/ninja-basic"
+        ).should                                        == FirstComment
+
+        @output.should                                  =~ /nothing to save/i
+      end
     end
 
 

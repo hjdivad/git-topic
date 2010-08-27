@@ -333,9 +333,11 @@ describe GitTopic::Comment do
       lambda{ notes_from_reply_to_comments }.should     raise_error
     end
 
-    it "should add the users' comments as replies to the originals" do
+    it "
+      should add the users' comments as replies to the originals and return true
+    ".oneline do
       self.should_receive( :existing_comments? ).     and_return( true )
-      self.should_receive( :existing_comments ).       and_return( ExistingComment )
+      self.should_receive( :existing_comments ).      and_return( ExistingComment )
       self.should_receive( :git_dir ).                and_return( "." )
       self.should_receive( :git_author_name_short ).  and_return( "Spec 456" )
       self.should_receive( :notes_ref ).
@@ -348,9 +350,27 @@ describe GitTopic::Comment do
         File.read( "./COMMENT_EDITMSG" ).should           == CommentWithReply
       end
 
-      lambda{ notes_from_reply_to_comments }.should_not   raise_error
+      lambda do
+        notes_from_reply_to_comments.should               == true
+      end.should_not                                      raise_error
     end
 
+    it "should return false if the user added no comments" do
+      self.should_receive( :existing_comments? ).     and_return( true )
+      self.should_receive( :existing_comments ).      and_return( ExistingComment )
+      self.should_receive( :git_dir ).                and_return( "." )
+      self.should_receive( :git_author_name_short ).  and_return( "Spec 456" )
+      self.should_not_receive( :notes_ref )
+      self.stub!( :invoke_git_editor ) do |path|
+        File.open( path, 'w' ) do |f|
+          f.write ExistingComment.lines.map{ |l| "# #{l}" }.join
+        end
+      end
+      self.should_receive( :invoke_git_editor )
+      self.should_not_receive( :git )
+
+      notes_from_reply_to_comments.should             == false
+    end
   end
 
 
