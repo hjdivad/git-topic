@@ -79,9 +79,9 @@ describe GitTopic do
             :git_author_name_short
           ).once.and_return( "Spec 123" )
 
-          File.exists?(
+          old_review = File.read(
             "../origin/refs/notes/reviews/#{@user}/krakens"
-          ).should                                == false
+          )
 
           lambda do
             GitTopic.work_on  'krakens'
@@ -95,9 +95,10 @@ describe GitTopic do
             GitTopic.done
           end.should_not                          raise_error
 
-          File.exists?(
+          new_review = File.read(
             "../origin/refs/notes/reviews/#{@user}/krakens"
-          ).should                                == true
+          )
+          new_review.should_not                   == old_review
         end
 
       end
