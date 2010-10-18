@@ -176,8 +176,23 @@ module GitTopic
       else
         raise "No review topic found matching ‘#{ref}’"
       end
-
       report  "Reviewing topic #{user}/#{topic}."
+
+      unless rebased_to_master?
+        git "rebase --quiet master"
+        report(
+          "
+            #{user}/#{topic} was not rebased to master, but has successfully
+            been automatically rebased.
+          ".unindent,
+          "
+            #{user}/#{topic} was not rebased to master, and I could not
+            automatically rebase it.  You will not be able to accept this topic.
+            Either
+              1) rebase the topic manually or
+              2) reject the topic and ask the author to rebase.
+          ".unindent )
+      end
     end
 
 

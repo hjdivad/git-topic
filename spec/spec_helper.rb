@@ -32,7 +32,7 @@ class << GitTopic
   end
   alias_method_chain  :git, :implicit_capture
 
-  def invoke_git_editor( file )
+  def invoke_git_editor file
     raise "
       invoke_git_editor invoked with (#{file}).  If you expect this method to be
       called, mock or stub it.
@@ -144,15 +144,15 @@ def git_branch
   current_branch[ 2..-1 ] unless current_branch.nil?
 end
 
-def git_head
-  `git rev-parse HEAD`.chomp
+def git_head  suffix=nil
+  `git rev-parse HEAD#{suffix}`.chomp
 end
 
 def git_origin_master
   `git rev-parse origin/master`.chomp
 end
 
-def git_config( key )
+def git_config  key 
   `git config #{key}`.chomp
 end
 
@@ -178,7 +178,7 @@ def git_remote_branches
   end
 end
 
-def git_notes_list( ref )
+def git_notes_list  ref
   `git notes --ref #{ref}`.split( "\n" )
 end
 
@@ -197,7 +197,7 @@ def dirty_branch!
 end
 
 
-def with_argv( val )
+def with_argv val 
   restore = ARGV.dup
   ARGV.replace( val )
   rv = yield

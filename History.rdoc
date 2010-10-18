@@ -1,3 +1,8 @@
+===   0.2.6
+
+* issues closed
+  - 15  git review will now attempt to automatically FF rebase.
+
 ===   0.2.5
 
 * issues closed

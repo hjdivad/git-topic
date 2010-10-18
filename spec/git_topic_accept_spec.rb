@@ -41,20 +41,23 @@ describe GitTopic do
       end
     end
 
+    # Normally the user should not even wind up in this state because +review+
+    # will complain if the branch does not automatically fast-forward.
     describe "while on a review branch that does not FF" do
       before( :each ) do
         use_repo 'in-progress'
+        GitTopic.review 'user24601/zombie-basic'
         system "
           git checkout master > /dev/null 2> /dev/null && 
           git merge origin/wip/prevent-ff > /dev/null 2> /dev/null
         "
         @original_git_Head    = git_head
-        GitTopic.review 'user24601/zombie-basic'
+        system "git checkout --quiet review/user24601/zombie-basic"
       end
 
       it "should refuse to accept the review branch" do
         git_branch.should                 == 'review/user24601/zombie-basic'
-        lambda{ GitTopic.accept }.should  raise_error
+        λ{ GitTopic.accept }.should  raise_error
         git_branch.should                 == 'review/user24601/zombie-basic'
         git_remote_branches.should        include( 'review/user24601/zombie-basic' )
 

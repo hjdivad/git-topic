@@ -62,7 +62,7 @@ describe GitTopic do
         system "git checkout master > /dev/null 2> /dev/null"
 
         git_branch.should                       == "master"
-        lambda do
+        λ do
           GitTopic.review 'zombie-basic' 
         end.should_not                          raise_error
         git_branch.should                       == "review/user24601/zombie-basic"
@@ -96,14 +96,61 @@ describe GitTopic do
 
       it "should handle fully-qualified topic args" do
         git_remote_branches.should      include 'review/user24601/ninja-basic'
-        lambda{ GitTopic.review( 'review/user24601/ninja-basic' )}.should_not raise_error
+        λ{ GitTopic.review( 'review/user24601/ninja-basic' )}.should_not raise_error
         git_branch.should               == 'review/user24601/ninja-basic'
         git_branch_remote.should        == 'origin'
         git_branch_merge.should         == 'refs/heads/review/user24601/ninja-basic'
       end
 
       it "should error if an illegal topic is specified" do
-        lambda{ GitTopic.review( 'fakeuser/faketopic' )}.should raise_error
+        λ{ GitTopic.review( 'fakeuser/faketopic' )}.should raise_error
+      end
+
+      describe "when the review branch is not rebased to master" do
+        it "should attempt to auto-rebase" do
+          git_head.should           == '331d827fd47fb234af54e3a4bbf8c6705e9116cc'
+          system [
+            "git checkout --quiet master",
+            "echo 'content' > some_file",
+            "git add .",
+            "git commit --all -m 'force rebase' > /dev/null",
+          ].join( "&& ")
+
+          head = git_head
+          head.should_not           == '331d827fd47fb234af54e3a4bbf8c6705e9116cc'
+
+          GitTopic.review 'ninja-basic'
+          git_head( '^' ).should    == head
+        end
+
+        it "should inform the user when it has auto-rebased" do
+          system [
+            "git checkout --quiet master",
+            "echo 'content' > some_file",
+            "git add .",
+            "git commit --all -m 'force rebase' > /dev/null",
+          ].join( "&& ")
+          GitTopic.review 'ninja-basic'
+
+          @output.should            =~ /rebase/    
+        end
+
+        it "should issue a warning if auto-rebasing fails" do
+          git_head.should             == '331d827fd47fb234af54e3a4bbf8c6705e9116cc'
+          system [
+            "git checkout --quiet master",
+            "echo 'conflicting content' > ninjas",
+            "git add .",
+            "git commit --all -m 'force failed rebase' > /dev/null",
+          ].join( "&& ")
+
+          head = git_head
+          head.should_not             == '331d827fd47fb234af54e3a4bbf8c6705e9116cc'
+
+          λ do
+            GitTopic.review 'ninja-basic'
+          end.should                raise_error
+        end
       end
     end
 

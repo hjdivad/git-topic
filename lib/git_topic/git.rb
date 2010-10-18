@@ -46,12 +46,16 @@ module GitTopic::Git
       not working_tree_clean?
     end
 
-    def existing_comments?( branch=current_branch )
+    def rebased_to_master?  from=nil
+      capture_git( "rev-list -n 1 #{from}..master" ).strip.empty?
+    end
+
+    def existing_comments?  branch=current_branch
       ref = notes_ref( branch )
       not capture_git( "notes --ref #{ref} list" ).chomp.empty?
     end
 
-    def existing_comments( spec=nil )
+    def existing_comments spec=nil
       ref = notes_ref( *[ spec ].compact )
       capture_git( "notes --ref #{ref} show" ).chomp
     end
@@ -79,7 +83,7 @@ module GitTopic::Git
     end
 
 
-    def switch_to_branch( branch, tracking=nil )
+    def switch_to_branch  branch, tracking=nil
       if branches.include?( branch )
         "checkout #{branch}"
       else
@@ -87,17 +91,17 @@ module GitTopic::Git
       end
     end
 
-    def invoke_git_editor( file )
+    def invoke_git_editor file
       system "#{git_editor} #{file}"
     end
 
-    def cmd_redirect_suffix( opts )
+    def cmd_redirect_suffix opts
       if !opts[:show] && !display_git_output?
         "> /dev/null 2> /dev/null"
       end
     end
 
-    def git( cmds=[], opts={} )
+    def git cmds=[], opts={}
       opts.assert_valid_keys    :must_succeed, :show
 
       cmds  = [cmds] if cmds.is_a? String
@@ -117,7 +121,7 @@ module GitTopic::Git
       result
     end
 
-    def capture_git( cmds=[], opts={} )
+    def capture_git cmds=[], opts={}
       opts.assert_valid_keys    :must_succeed
 
       cmds = [cmds] if cmds.is_a? String
@@ -139,7 +143,7 @@ module GitTopic::Git
 
   end
 
-  def self.included( base )
+  def self.included base
     base.extend ClassMethods
   end
 end
