@@ -5,6 +5,11 @@ source :gemcutter
 group :runtime do
   gem 'activesupport',  '~> 3.0'
   gem 'trollop'
+
+  # This nutiness makes very little sense, but I can't find a sane way of
+  # calling ‘gemspec’ that works.  Of course, the non-exisistant documentation
+  # is of little help.
+  gem 'git-topic'
 end
 
 group :development do

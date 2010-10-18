@@ -15,10 +15,10 @@ class << GitTopic
       ).each do |m|
 
     define_method( "#{m}_with_nocache" ) do
-      rv = send( "#{m}_without_nocache" )
-      GitTopic::Naming::ClassMethods.class_variable_set(  "@@#{m}", nil )
-      GitTopic::Git::ClassMethods.class_variable_set(     "@@#{m}", nil )
-      rv
+      send( "#{m}_without_nocache" ).tap do
+        GitTopic::Naming::ClassMethods.class_variable_set(  "@@#{m}", nil )
+        GitTopic::Git::ClassMethods.class_variable_set(     "@@#{m}", nil )
+      end
     end
     alias_method_chain m.to_sym, :nocache
   end
@@ -39,6 +39,13 @@ class << GitTopic
     ".oneline
   end
 
+end
+
+class << GitTopic::Logger
+  def logger_with_nocache
+    logger_without_nocache.tap{ @logger = nil }
+  end
+  alias_method_chain :logger, :nocache
 end
 
 
@@ -63,6 +70,7 @@ class Object
       alias_method :write, :real_write
     end
 
+    $debugging = true
     require 'ruby-debug'
     debugger
   end
@@ -76,12 +84,14 @@ Rspec.configure do |c|
   c.before( :all ) do
     @starting_dir   = Dir.pwd
     @user           = ENV['USER'] || `whoami`
+    ENV['HOME']     = "#{@starting_dir}/tmp/home"
   end
 
   c.before( :each ) do
     # setup the directories
     FileUtils.rm_rf   './tmp'
     FileUtils.mkdir   './tmp'
+    FileUtils.mkdir   './tmp/home'
 
     # Copy our repos into tmp
     %w(fresh in-progress).each do |d|
@@ -104,6 +114,10 @@ Rspec.configure do |c|
       if File.exists? ".git/refs/notes/reviews/USER"
         FileUtils.mv  ".git/refs/notes/reviews/USER",
                       ".git/refs/notes/reviews/#{@user}"
+      end
+      if File.exists? "./refs/notes/reviews/USER"
+        FileUtils.mv  "./refs/notes/reviews/USER",
+                      "./refs/notes/reviews/#{@user}"
       end
       Dir.chdir @starting_dir
     end
@@ -197,13 +211,14 @@ def dirty_branch!
 end
 
 
-def with_argv val 
+def with_argv *val 
   restore = ARGV.dup
-  ARGV.replace( val )
+  ARGV.replace( val.flatten )
   rv = yield
   ARGV.replace( restore )
   rv
 end
+
 
 # }}}
 

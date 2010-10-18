@@ -2,6 +2,7 @@
 
 * issues closed
   - 15  git review will now attempt to automatically FF rebase.
+  - 18  git commands and error now logged.
 
 ===   0.2.5
 

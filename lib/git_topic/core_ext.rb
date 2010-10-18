@@ -118,8 +118,8 @@ class IO
     attr_accessor :output_callback, :error_callback
 
     def run  *args, &block
-      self.output_callback  = λ{ }
-      self.error_callback   = λ{ }
+      self.output_callback  = proc{ }
+      self.error_callback   = proc{ }
 
       # Let the block set up error, output hooks
       self.instance_eval &block
@@ -138,6 +138,8 @@ class IO
             nothing_read = false
           end
         end
+
+        wait_thread.value
       end
     end
 

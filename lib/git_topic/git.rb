@@ -25,8 +25,8 @@ module GitTopic::Git
       @@git_author_name_short ||= (
         full_name = capture_git( "config user.name" )
         raise "
-          whatever
-        " unless $?.success?
+          Unable to determine author name from git config user.name
+        " unless $pstatus.success?
 
         parts     = full_name.split( " " )
         fname     = parts.shift
@@ -39,7 +39,6 @@ module GitTopic::Git
 
     def working_tree_clean?
       git [ "diff --quiet", "diff --quiet --cached" ]
-      $?.success?
     end
 
     def working_tree_dirty?
@@ -101,44 +100,60 @@ module GitTopic::Git
       end
     end
 
-    def git cmds=[], opts={}
-      opts.assert_valid_keys    :must_succeed, :show
-
-      cmds  = [cmds] if cmds.is_a? String
-      redir = cmd_redirect_suffix( opts )
-      cmd = cmds.map{|c| "git #{c} #{redir}"}.join( " && " )
-
-      puts cmd if GitTopic::global_opts[:verbose]
-      result = system( cmd )
-
-      if opts[:must_succeed] && !$?.success?
-        raise "
-          Required git command failed:\n  #{cmd}.\n  re-run with --verbose to
-          see git output.
-        ".unindent
-      end
-
-      result
+    def git *args
+      output, err, pstatus = _git  *args
+      pstatus && pstatus.success?
     end
 
-    def capture_git cmds=[], opts={}
-      opts.assert_valid_keys    :must_succeed
+    def capture_git *args
+      output, err, pstatus = _git  *args
+      output
+    end
 
-      cmds = [cmds] if cmds.is_a? String
-      redir = "2> /dev/null" unless display_git_output?
-      cmd = "#{cmds.map{|c| "git #{c} #{redir}"}.join( " && " )}"
 
-      puts cmd if GitTopic::global_opts[:verbose]
-      result = `#{cmd}`
+    protected
 
-      if opts[:must_succeed] && !$?.success?
+    def _git  cmds=[], opts={}
+      opts.assert_valid_keys    :must_succeed, :show
+
+      cmds = [ cmds ] if cmds.is_a? String
+      return if cmds.empty?
+
+      cmd = "#{cmds.map{|c| "git #{c}"}.join( " && " )}"
+
+
+      puts  cmd if GitTopic::global_opts[:verbose]
+      debug cmd
+
+      cmd_error   = ''
+      cmd_output  = ''
+      $pstatus = pstatus = IO.dpopen( cmd ) do
+        on_output{ |o| cmd_output << o }
+        on_error{ |e| cmd_error << e }
+      end
+
+      if display_git_output? || opts[:show]
+        puts cmd_output
+        puts cmd_error
+      end
+
+      debug cmd_output  unless cmd_output.empty?
+      unless cmd_error.empty?
+        if pstatus.success?
+          debug cmd_error
+        else
+          warn  cmd_error
+        end
+      end
+
+      if opts[:must_succeed] && ! pstatus.success?
         raise "
           Required git command failed:\n  #{cmd}.\n  re-run with --verbose to
           see git output.
         ".unindent
       end
 
-      result
+      [ cmd_output, cmd_error, pstatus ]
     end
 
   end

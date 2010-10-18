@@ -41,6 +41,8 @@ module GitTopic
             "Verbose output, including complete traces on errors."
         opt :completion_help,
             "View instructions for setting up autocompletion."
+        opt :no_log,
+            "Disable logging."
 
         stop_on         SubCommands
       end
@@ -66,7 +68,8 @@ module GitTopic
         exit 0
       end
 
-
+      info      ''
+      info      ARGV.join( " " )
       cmd       = ARGV.shift
       cmd_opts  = Trollop::options do
         case cmd

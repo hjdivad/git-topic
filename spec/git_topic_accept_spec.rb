@@ -36,7 +36,7 @@ describe GitTopic do
 
         it "should fail if the working tree is dirty" do
           dirty_branch!
-          lambda{ GitTopic.accept }.should    raise_error
+          λ{ GitTopic.accept }.should    raise_error
         end
       end
     end
@@ -70,7 +70,7 @@ describe GitTopic do
       before( :each ) { use_repo 'in-progress' }
 
       it "should fail" do
-        lambda{ GitTopic.accept }.should    raise_error
+        λ{ GitTopic.accept }.should    raise_error
       end
     end
   end

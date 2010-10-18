@@ -1,13 +1,22 @@
 #!/usr/bin/env ruby
 # encoding: utf-8
 
+require 'rubygems'
+require 'bundler'
+
+# Work around absurd bundler API
+ENV['BUNDLE_GEMFILE'] = "#{File.dirname __FILE__}/../Gemfile"
+Bundler.setup :runtime
+ENV.delete 'BUNDLE_GEMFILE'
+
 require 'active_support'
 require 'active_support/core_ext/hash/keys'
 
-require 'core_ext'
+require 'git_topic/core_ext'
 require 'git_topic/git'
 require 'git_topic/naming'
 require 'git_topic/comment'
+require 'git_topic/logger'
 
 
 module GitTopic
@@ -17,7 +26,7 @@ module GitTopic
 
   GlobalOptKeys = [
     :verbose, :help, :verbose_given, :version, :completion_help,
-    :completion_help_given
+    :completion_help_given, :no_log
   ]
 
 
@@ -234,8 +243,7 @@ module GitTopic
     def comment( opts={} )
       diff_legal = 
         git( "diff --diff-filter=ACDRTUXB --quiet" )          && 
-        git( "diff --cached --diff-filter=ACDRTUXB --quiet" ) && 
-        $?.success?
+        git( "diff --cached --diff-filter=ACDRTUXB --quiet" )
     
       raise "
         Diffs are not comments.  Files have been added, deleted or had their
@@ -246,7 +254,7 @@ module GitTopic
       ".unindent unless diff_legal
 
 
-      diff_empty          = git( "diff --diff-filter=M --quiet" ) && $?.success?
+      diff_empty          = git( "diff --diff-filter=M --quiet" )
 
       added_comments = 
         case current_namespace
@@ -407,7 +415,7 @@ module GitTopic
     protected
 
     def report( success_msg, error_msg=nil )
-      if $?.success?
+      if $pstatus && $pstatus.success?
         puts success_msg
       else
         error_msg ||= "Error running command.  re-run with --verbose for details"

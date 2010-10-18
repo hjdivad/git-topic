@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["David J. Hamilton"]
-  s.date = %q{2010-08-27}
+  s.date = %q{2010-10-19}
   s.description = %q{
       gem command around reviewed topic branches.  Supports workflow of the form:
 
@@ -65,11 +65,12 @@ Gem::Specification.new do |s|
      "Rakefile",
      "VERSION.yml",
      "autotest/discover.rb",
-     "lib/core_ext.rb",
      "lib/git_topic.rb",
      "lib/git_topic/cli.rb",
      "lib/git_topic/comment.rb",
+     "lib/git_topic/core_ext.rb",
      "lib/git_topic/git.rb",
+     "lib/git_topic/logger.rb",
      "lib/git_topic/naming.rb",
      "lib/tasks/annotations.rake",
      "share/completion.bash",
@@ -80,6 +81,7 @@ Gem::Specification.new do |s|
      "spec/git_topic_comments_spec.rb",
      "spec/git_topic_done_spec.rb",
      "spec/git_topic_install_aliases_spec.rb",
+     "spec/git_topic_logging_spec.rb",
      "spec/git_topic_reject_spec.rb",
      "spec/git_topic_review_spec.rb",
      "spec/git_topic_setup_spec.rb",
@@ -135,20 +137,53 @@ Gem::Specification.new do |s|
      "spec/template/origin/info/exclude",
      "spec/template/origin/objects/0a/da6d051b94cd0df50f5a0b7229aec26f0d2cdf",
      "spec/template/origin/objects/0c/e06c616769768f09f5e629cfcc68eabe3dee81",
+     "spec/template/origin/objects/16/f0fda5a88c44380ec3f687ec2e82fe702af7f7",
+     "spec/template/origin/objects/17/5faa9939b9ac3d71ce53c42aee5e6e6a0c785c",
+     "spec/template/origin/objects/19/cf2c8a1f688b055774982d5010e6e30a664cc0",
+     "spec/template/origin/objects/19/df194219c4296b82a9bfc8923def101c8485f1",
      "spec/template/origin/objects/20/049991cdafdce826f5a3c01e10ffa84d6997ec",
+     "spec/template/origin/objects/28/222998cef35ffc5f39aa5c33c410624870e14e",
+     "spec/template/origin/objects/2b/56d40e3a8cdd99f6dbd02172231af5f44b1a4a",
      "spec/template/origin/objects/2d/a16986c7f742f808a3a3e68108bd2e4dae009d",
      "spec/template/origin/objects/33/1d827fd47fb234af54e3a4bbf8c6705e9116cc",
+     "spec/template/origin/objects/3a/23df5be628d9dc86c3c201ed90666ca48706e8",
      "spec/template/origin/objects/41/51899b742fd6b1c873b177b9d13451682089bc",
      "spec/template/origin/objects/44/ffd9c9c8b52b201659e3ad318cdad6ec836b46",
+     "spec/template/origin/objects/47/a05bbad3ae0061aa6dcdefd5a2b91ef878e547",
+     "spec/template/origin/objects/4a/f7e0cf66fa7ca6f4c64dabaf9cb4a7e75e530a",
      "spec/template/origin/objects/4b/825dc642cb6eb9a060e54bf8d69288fbee4904",
+     "spec/template/origin/objects/51/30b0045082c311949fbe05bebbd7d77d2651fe",
+     "spec/template/origin/objects/53/348549b5f62b3d7fe308e314450c8dafb24a20",
+     "spec/template/origin/objects/53/75f6d2da8e15dc1b93b53b794cc1c1a4b0a562",
      "spec/template/origin/objects/55/eeb01bdf874d1a35870bcf24a970c475c63344",
+     "spec/template/origin/objects/60/49ef3b01a46738c640dad45d5ea27d21ca3148",
      "spec/template/origin/objects/65/3d7112dadcacaaae6390612eac58c234f92b18",
+     "spec/template/origin/objects/6a/671e28d05e12f0eb3a84b6c0e850acb5baa043",
+     "spec/template/origin/objects/73/0d2b5fb7b28275d54672b24a10f9ff416151d9",
+     "spec/template/origin/objects/77/8c48ec250d87693b1285518be6d32cd83c0d0e",
+     "spec/template/origin/objects/7b/2e0052793a417262e6b0a7049e27106e8df6df",
+     "spec/template/origin/objects/88/e563ba0dd5f822c9edcdb8a5d03f37c0b51efb",
+     "spec/template/origin/objects/8c/1eed9b8b7a0df74f6e0e4665f87f464b224e4f",
      "spec/template/origin/objects/8d/09f9b8d80ce282218125cb0cbf53cccf022203",
+     "spec/template/origin/objects/8e/59fbefc7a107f6c489a2ef65705f0b1944f7f0",
+     "spec/template/origin/objects/ae/23634551b381284d41cc67060322d082f7cce4",
+     "spec/template/origin/objects/b4/2dce0a04152ceb67d8120b5fc06cf583809590",
      "spec/template/origin/objects/b4/8e68d5cac189af36abe48e893d11c24b7b2a19",
      "spec/template/origin/objects/c0/838ed2ee8f2e83c8bda859fc5e332b92f0a5a3",
+     "spec/template/origin/objects/c4/305717087f3413b5e50ae0c8037968758bf74d",
+     "spec/template/origin/objects/ca/9f1a38464dc0a7d099b7199126df2040f1b38b",
      "spec/template/origin/objects/cd/f7b9dbc4911a0d1404db54cde2ed448f6a6afd",
+     "spec/template/origin/objects/ce/66c4be9f1659f4621a0c709d9a87d2e6d464a2",
+     "spec/template/origin/objects/d2/33cf6f04743aabaf4ea7ce546aed9a9758620f",
      "spec/template/origin/objects/d2/6b33daea1ed9823a189992bba38fbc913483c1",
+     "spec/template/origin/objects/d3/f64a65197f61743cbe291f8c4dbaf09dbfb902",
+     "spec/template/origin/objects/dd/1f38ef8037b85682079063d8c577c7b9f402bd",
      "spec/template/origin/objects/dd/26afde91bbae18e13e4df1cd1da56a75ccc665",
+     "spec/template/origin/objects/df/8a312e41f9319aa4e73264d32ff65496867b37",
+     "spec/template/origin/objects/e3/240e1f3328432e1708a2181d0b2e92bbb2b20d",
+     "spec/template/origin/objects/e8/4eaf06f50ed3b33e6846109436606668886c48",
+     "spec/template/origin/objects/e8/b14aa4019584baf1ad3ab974503999fd170ce0",
+     "spec/template/origin/objects/ed/ff0b85a5f8532df0bd6753d0942f4b7c0ede55",
      "spec/template/origin/objects/fe/4e254557e19f338f40ccfdc00a7517771db880",
      "spec/template/origin/refs/heads/master",
      "spec/template/origin/refs/heads/rejected/USER/krakens",
@@ -158,7 +193,9 @@ Gem::Specification.new do |s|
      "spec/template/origin/refs/heads/wip/USER/pirates-advanced",
      "spec/template/origin/refs/heads/wip/USER/zombie-basic",
      "spec/template/origin/refs/heads/wip/prevent-ff",
-     "spec/template/origin/refs/heads/wip/user24601/pirates-with-hooks"
+     "spec/template/origin/refs/heads/wip/user24601/pirates-with-hooks",
+     "spec/template/origin/refs/notes/reviews/USER/krakens",
+     "spec/template/origin/refs/notes/reviews/user24601/ninja-basic"
   ]
   s.homepage = %q{http://github.com/hjdivad/git-topic}
   s.post_install_message = %q{
@@ -188,6 +225,7 @@ Gem::Specification.new do |s|
      "spec/git_topic_done_spec.rb",
      "spec/bash_completion.rb",
      "spec/git_topic_comments_spec.rb",
+     "spec/git_topic_logging_spec.rb",
      "spec/git_topic_install_aliases_spec.rb",
      "spec/git_topic_status_spec.rb",
      "spec/git_topic_accept_spec.rb",
@@ -199,36 +237,42 @@ Gem::Specification.new do |s|
     s.specification_version = 3
 
     if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.2.0') then
-      s.add_runtime_dependency(%q<activesupport>, [">= 3.0.0.beta4"])
+      s.add_runtime_dependency(%q<activesupport>, ["~> 3.0"])
       s.add_runtime_dependency(%q<trollop>, [">= 0"])
+      s.add_runtime_dependency(%q<git-topic>, [">= 0"])
       s.add_development_dependency(%q<jeweler>, [">= 0"])
       s.add_development_dependency(%q<rake>, [">= 0"])
-      s.add_development_dependency(%q<rspec>, [">= 2.0.0.beta.16"])
-      s.add_development_dependency(%q<ZenTest>, [">= 0"])
+      s.add_development_dependency(%q<rspec>, ["~> 2.0.0"])
       s.add_development_dependency(%q<yard>, [">= 0"])
-      s.add_development_dependency(%q<gemcutter>, [">= 0"])
+      s.add_development_dependency(%q<gemcutter>, ["~> 0.5.0"])
+      s.add_development_dependency(%q<autotest>, [">= 0"])
       s.add_development_dependency(%q<autotest-screen>, [">= 0"])
+      s.add_development_dependency(%q<ruby-debug19>, [">= 0"])
     else
-      s.add_dependency(%q<activesupport>, [">= 3.0.0.beta4"])
+      s.add_dependency(%q<activesupport>, ["~> 3.0"])
       s.add_dependency(%q<trollop>, [">= 0"])
+      s.add_dependency(%q<git-topic>, [">= 0"])
       s.add_dependency(%q<jeweler>, [">= 0"])
       s.add_dependency(%q<rake>, [">= 0"])
-      s.add_dependency(%q<rspec>, [">= 2.0.0.beta.16"])
-      s.add_dependency(%q<ZenTest>, [">= 0"])
+      s.add_dependency(%q<rspec>, ["~> 2.0.0"])
       s.add_dependency(%q<yard>, [">= 0"])
-      s.add_dependency(%q<gemcutter>, [">= 0"])
+      s.add_dependency(%q<gemcutter>, ["~> 0.5.0"])
+      s.add_dependency(%q<autotest>, [">= 0"])
       s.add_dependency(%q<autotest-screen>, [">= 0"])
+      s.add_dependency(%q<ruby-debug19>, [">= 0"])
     end
   else
-    s.add_dependency(%q<activesupport>, [">= 3.0.0.beta4"])
+    s.add_dependency(%q<activesupport>, ["~> 3.0"])
     s.add_dependency(%q<trollop>, [">= 0"])
+    s.add_dependency(%q<git-topic>, [">= 0"])
     s.add_dependency(%q<jeweler>, [">= 0"])
     s.add_dependency(%q<rake>, [">= 0"])
-    s.add_dependency(%q<rspec>, [">= 2.0.0.beta.16"])
-    s.add_dependency(%q<ZenTest>, [">= 0"])
+    s.add_dependency(%q<rspec>, ["~> 2.0.0"])
     s.add_dependency(%q<yard>, [">= 0"])
-    s.add_dependency(%q<gemcutter>, [">= 0"])
+    s.add_dependency(%q<gemcutter>, ["~> 0.5.0"])
+    s.add_dependency(%q<autotest>, [">= 0"])
     s.add_dependency(%q<autotest-screen>, [">= 0"])
+    s.add_dependency(%q<ruby-debug19>, [">= 0"])
   end
 end
 

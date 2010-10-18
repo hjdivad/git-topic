@@ -81,7 +81,7 @@ describe GitTopic do
       before( :each ) { use_repo 'in-progress' }
 
       it "should ask the user to #setup or configure no-whine" do
-        with_argv( [] ) do
+        with_argv do
           GitTopic.run
           @err.should                           =~ /setup/
         end
@@ -99,7 +99,7 @@ describe GitTopic do
 
         system "git config --add remote.origin.fetch refs/notes/reviews/*:refs/notes/reviews/*"
 
-        with_argv( [] ) do
+        with_argv do
           GitTopic.run
           @err.should                       =~ /setup/
         end
