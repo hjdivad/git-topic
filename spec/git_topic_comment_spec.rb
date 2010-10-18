@@ -114,7 +114,7 @@ describe GitTopic do
           f.puts %Q{
             I have some general comments, mostly relating to the quality of our
             zombie-control policies.  Basically, they're not working.
-          }.cleanup
+          }.unindent
         end
       end
     end
@@ -176,7 +176,7 @@ describe GitTopic do
             #       destroy z
             #     end
             # This should take care of our issues with zombies.
-          }.cleanup
+          }.unindent
         end
         lambda{ GitTopic.comment }.should     raise_error
       end
@@ -214,7 +214,7 @@ describe GitTopic do
             #       destroy z
             #     end
             # This should take care of our issues with zombies.
-          }.cleanup
+          }.unindent
         end
         GitTopic.should_receive( :invoke_git_editor ).once
         GitTopic.should_receive(
@@ -261,7 +261,7 @@ describe GitTopic do
             #       destroy z
             #     end
             # This should take care of our issues with zombies.
-          }.cleanup
+          }.unindent
         end
 
         lambda{ GitTopic.comment }.should             raise_error
@@ -273,7 +273,7 @@ describe GitTopic do
             # I suggest we do the following instead:
             #   everyone.giveup
             # This should take care of our issues with zombies.
-          }.cleanup
+          }.unindent
         end
 
         GitTopic.should_receive( :invoke_git_editor ).once
@@ -401,7 +401,7 @@ describe GitTopic do
             #       destroy z
             #     end
             # This should take care of our issues with zombies.
-          }.cleanup
+          }.unindent
         end
 
         lambda{ GitTopic.comment }.should               raise_error

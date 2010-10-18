@@ -75,7 +75,7 @@ module GitTopic::Comment
           # Ceterum censeo, Carthaginem esse delendam.
           #
           #
-        }.cleanup
+        }.unindent
         f.puts( fs_notes.lines.map do |line|
             "# #{line}"
           end.join )
@@ -235,7 +235,7 @@ module GitTopic::Comment
           #                                                     Douglas Adams
           #
           #
-        }.cleanup
+        }.unindent
         f.puts( notes.lines.map do |line|
             "# #{line}"
           end.join )

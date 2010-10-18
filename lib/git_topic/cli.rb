@@ -34,7 +34,7 @@ module GitTopic
             " )}
 
             Global Options:
-        ".cleanup
+        ".unindent
         version Version
 
         opt :verbose,   
@@ -62,7 +62,7 @@ module GitTopic
                 For more information, see:
 
                   http://redmine.ruby-lang.org/issues/show/3465
-        }.cleanup
+        }.unindent
         exit 0
       end
 
@@ -85,7 +85,7 @@ module GitTopic
             omitted, it will default to the current HEAD.
 
             Options:
-          ".cleanup
+          ".unindent
         when /done(-with)?/
           banner "
             git[-topic] done
@@ -94,7 +94,7 @@ module GitTopic
             remote review branch and switch back to master.
 
             Options:
-          ".cleanup
+          ".unindent
         when "status"
           banner "
             git st
@@ -104,7 +104,7 @@ module GitTopic
             that can be reviewed.
 
             Options:
-          ".cleanup
+          ".unindent
           opt   :prepended,
                 "
                   Prepend status to git status output (for a complete view of
@@ -118,7 +118,7 @@ module GitTopic
             Review <topic>.  If <topic> is unspecified, review the oldest (by HEAD) topic.
 
             Options:
-          ".cleanup
+          ".unindent
         when "comment"
           banner "
             git[-topic] comment
@@ -153,7 +153,7 @@ module GitTopic
                 comments.
 
             Options:
-          ".cleanup
+          ".unindent
 
           opt   :force_update,
                 "
@@ -169,7 +169,7 @@ module GitTopic
             know what to do to appease the reviewer.
 
             Options:
-          ".cleanup
+          ".unindent
         when "accept"
           banner "
             git[-topic] accept
@@ -180,7 +180,7 @@ module GitTopic
             should either be rejected, or you can manually rebase.
 
             Options:
-          ".cleanup
+          ".unindent
         when "reject"
           banner "
             git[-topic] reject
@@ -188,7 +188,7 @@ module GitTopic
             Reject the current in-review topic.
 
             Options:
-          ".cleanup
+          ".unindent
 
           opt   :save_comments,
                 "
@@ -211,7 +211,7 @@ module GitTopic
             st          topic status --prepended
 
             Options:
-          ".cleanup
+          ".unindent
 
           opt   :local,
                 "

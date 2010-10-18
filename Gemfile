@@ -11,11 +11,13 @@ group :development do
   gem 'jeweler'
   gem 'rake'
   gem 'rspec',          '>= 2.0.0.beta.16'
-  gem 'ZenTest'
   gem 'yard'
-  gem 'gemcutter'
+  gem 'gemcutter',      '~> 0.5.0'
 
+  gem 'autotest'
   gem 'autotest-screen'
+
+  gem 'ruby-debug19'
 end
 
 

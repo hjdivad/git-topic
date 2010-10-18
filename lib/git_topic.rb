@@ -203,7 +203,7 @@ module GitTopic
         raise "
           review branch is not up to date: merge not a fast-forward.  Either
           rebase or reject this branch.
-        ".cleanup
+        ".unindent
       end
 
       rem_review_branch   = find_remote_review_branch( topic ).gsub( %r{^origin/}, '' )
@@ -228,7 +228,7 @@ module GitTopic
           git diff --diff-filter=ACDRTUXB
         for a list of changes preventing git-topic comment from saving your
         comments.
-      ".cleanup unless diff_legal
+      ".unindent unless diff_legal
 
 
       diff_empty          = git( "diff --diff-filter=M --quiet" ) && $?.success?
@@ -428,7 +428,7 @@ module GitTopic
                 GIT_NOTES_REWRITE_REF=refs/notes/reviews/* git rebase
 
               instead of `git rebase`
-        ".cleanup
+        ".unindent
       end
     end
 

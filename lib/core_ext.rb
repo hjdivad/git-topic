@@ -1,5 +1,7 @@
 # encoding: utf-8
 
+require 'open3'
+
 require 'active_support'
 require 'active_support/inflector'
 require 'active_support/core_ext/module/aliasing'
@@ -7,7 +9,7 @@ require 'active_support/core_ext/string/inflections'
 
 
 class String
-  def cleanup
+  def unindent
       indent = (index /^([ \t]+)/; $1) || ''
       regex = /^#{Regexp::escape( indent )}/
       strip.gsub regex, ''
@@ -15,6 +17,10 @@ class String
 
   def oneline
       strip.gsub( /\n\s+/, ' ' )
+  end
+
+  def blank?
+    nil? || empty?
   end
 
   # Annoyingly, the useful version of pluralize in texthelpers isn't in the
@@ -89,8 +95,58 @@ end
 
 
 class Object
-    # Deep duplicate via remarshaling.  Not always applicable.
-    def ddup
-        Marshal.load( Marshal.dump( self ))
+  # Deep duplicate via remarshaling.  Not always applicable.
+  def ddup
+      Marshal.load( Marshal.dump( self ))
+  end
+end
+
+
+module Kernel
+  alias_method  :λ,  :lambda
+end
+
+
+class IO
+
+  def self.dpopen  *args, &block
+    Execution.new.run *args, &block
+  end
+
+  class Execution
+
+    attr_accessor :output_callback, :error_callback
+
+    def run  *args, &block
+      self.output_callback  = λ{ }
+      self.error_callback   = λ{ }
+
+      # Let the block set up error, output hooks
+      self.instance_eval &block
+
+      Open3.popen3 *args do |pin, pout, perr, wait_thread|
+        nothing_read = false
+        until nothing_read do
+          nothing_read = true
+          if s = pout.gets
+            self.output_callback[ s ]
+            nothing_read = false
+          end
+
+          if s = perr.gets
+            self.error_callback[ s ]
+            nothing_read = false
+          end
+        end
+      end
     end
+
+    def on_error  &block
+      self.error_callback = block
+    end
+
+    def on_output &block
+      self.output_callback  = block
+    end
+  end
 end

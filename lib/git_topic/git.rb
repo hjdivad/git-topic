@@ -111,7 +111,7 @@ module GitTopic::Git
         raise "
           Required git command failed:\n  #{cmd}.\n  re-run with --verbose to
           see git output.
-        ".cleanup
+        ".unindent
       end
 
       result
@@ -131,7 +131,7 @@ module GitTopic::Git
         raise "
           Required git command failed:\n  #{cmd}.\n  re-run with --verbose to
           see git output.
-        ".cleanup
+        ".unindent
       end
 
       result
