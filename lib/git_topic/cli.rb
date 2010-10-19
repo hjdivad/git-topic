@@ -75,7 +75,7 @@ module GitTopic
         case cmd
         when "work-on"
           banner "
-            git[-topic] work-on <topic>
+            git[-topic] work-on <topic> [<upstream> | --continue]
 
             Switches to a local work-in-progress (wip) branch for <topic>.  The
             branch (and a matching remote branch) is created if necessary.
@@ -84,8 +84,14 @@ module GitTopic
             the rejected topic branch.  Similarly, if this is a review topic,
             the review will be pulled and work will continue on that topic.
 
-            <topic>'s branches HEAD will point to <upstream>.  If <upstream> is
-            omitted, it will default to the current HEAD.
+            <topic>'s branch's HEAD will point to <upstream>, if supplied.  If
+            --continue is supplied instead, HEAD will point to the most recent
+            review (i.e. submitted) of your topic branches.  If you have just
+            submitted a topic with git done, git work-on next-topic --continue
+            would begin the next topic starting from where you had left off.
+           
+            If both <upstream> and --continue are omitted, <topic>'s branch's
+            HEAD will default to the current HEAD.
 
             Options:
           ".unindent

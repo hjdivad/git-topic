@@ -40,7 +40,7 @@ describe GitTopic do
       end
 
       it "should fail if no topic is given" do
-        lambda { GitTopic.work_on( nil )}.should  raise_error
+        λ { GitTopic.work_on( nil )}.should  raise_error
       end
 
       it "should provide feedback to the user" do
@@ -68,20 +68,62 @@ describe GitTopic do
 
       it "should switch to (rather than create) an existing topic branch" do
         git_branches.should include( "wip/#{@user}/zombie-basic" )
-        lambda{ GitTopic.work_on  'zombie-basic' }.should_not raise_error
+        λ{ GitTopic.work_on  'zombie-basic' }.should_not raise_error
 
         git_branch.should   == "wip/#{@user}/zombie-basic"
       end
 
       it "should accept upstream as an argument" do
         git_remote_branches.should include( "review/#{@user}/pirates" )
-        lambda do
+        λ do
           GitTopic.work_on  'pirates-etc',
                             :upstream => "origin/review/#{@user}/pirates"
         end.should_not raise_error
 
         git_branch.should   == "wip/#{@user}/pirates-etc"
         git_head.should     == 'c0838ed2ee8f2e83c8bda859fc5e332b92f0a5a3'
+      end
+
+      describe "--continue flag" do
+        describe "when one has an as-yet unaccepted review branch" do
+          it "should set <upstream> to the latest such branch" do
+            λ do
+              GitTopic.work_on  'pirates-etc'
+              dirty_branch!
+              system "git add . && git commit -a -m 'arrrrr' > /dev/null 2> /dev/null"
+              GitTopic.done
+            end.should_not        raise_error
+
+            head = git_remote   "origin/review/#{@user}/pirates-etc"
+            head.should_not     == '331d827fd47fb234af54e3a4bbf8c6705e9116cc'
+
+            GitTopic.work_on    'yet-more-pirates',
+                                :continue => true
+
+            git_head.should     == head
+          end
+        end
+
+        describe "when one has no pending review branches" do
+          before( :each ){ use_repo 'fresh' }
+
+          it "should have no effect" do
+            GitTopic.work_on  'yet-more-pirates',
+                              :continue => true
+
+            git_head.should   == '331d827fd47fb234af54e3a4bbf8c6705e9116cc'
+          end
+        end
+
+        describe "when an explicit <upstream> is also supplied" do
+          it "should fail with an error" do
+            λ do
+              GitTopic.work_on  'pirates-etc',
+                                :continue => true,
+                                :upstream => "origin/review/#{@user}/pirates"
+            end.should          raise_error
+          end
+        end
       end
 
       it "

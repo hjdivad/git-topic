@@ -141,7 +141,7 @@ end
 # helpers # {{{
 
 def use_repo( repo )
-  Dir.chdir( repo )
+  Dir.chdir( "#{@starting_dir}/tmp/#{repo}" )
   # Exit if e.g. GIT_DIR is set
   raise "Spec error" unless git_dir == '.git'
 end

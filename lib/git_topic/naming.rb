@@ -123,14 +123,32 @@ module GitTopic::Naming
       @@remote_branches ||= capture_git( "branch -r --no-color" ).split( "\n" ).map{|b| b[2..-1]}
     end
 
-    def others_review_branches
+    def review_branches
       remote_branches.select do
         |b| b =~ %r{/review/}
-      end.reject do |b|
+      end
+    end
+
+    def others_review_branches
+      review_branches.reject do |b|
         b =~ %r{/#{user}/}
       end
     end
 
+    def user_review_branches  user=user
+      review_branches.select do |b|
+        b =~ %r{/#{user}/}
+      end
+    end
+
+    # Returns review branches as a hash of namespace → user → topic* hashes,
+    # e.g.
+    #
+    #   {
+    #     :review   => { 'davidjh' => [ 'topic1', 'topic2' ]},
+    #     :rejected => { 'davidjh' => [ 'topic3' ]}
+    #   }
+    #
     def remote_branches_organized
       @@remote_branches_organized ||= (
         rb = remote_branches.dup
@@ -169,6 +187,20 @@ module GitTopic::Naming
       commits_by_age = capture_git([
         "log --date-order --reverse --pretty=format:%d",
         "^origin/master #{others_review_branches.join( ' ' )}",
+      ].join( " " )).split( "\n" )
+
+      commits_by_age.find do |ref|
+        # no ‘,’, i.e. only one ref matches the commit
+        !ref.strip.empty? && ref.index( ',' ).nil?
+      end.strip[ 1..-2 ] # chomp the leading and trailing parenthesis
+    end
+
+    def newest_pending_branch
+      return nil if user_review_branches.empty?
+
+      commits_by_age = capture_git([
+        "log --date-order --pretty=format:%d",
+        "^origin/master #{user_review_branches.join( ' ' )}",
       ].join( " " )).split( "\n" )
 
       commits_by_age.find do |ref|

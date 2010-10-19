@@ -3,6 +3,8 @@
 * issues closed
   - 15  git review will now attempt to automatically FF rebase.
   - 18  git commands and error now logged.
+  - 21  git work-on --continue will now assume an <upstream> of the user's
+        latest review topic
 
 ===   0.2.5
 

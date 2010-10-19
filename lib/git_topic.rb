@@ -34,7 +34,18 @@ module GitTopic
 
     # Switch to a branch for the given topic.
     def work_on( topic, opts={} )
+      opts.assert_valid_keys  :continue, :upstream, *GlobalOptKeys
       raise "Topic must be specified" if topic.nil?
+
+      upstream =
+        if opts[:upstream] && opts[:continue]
+          raise "upstream and continue options mutually exclusive."
+        elsif opts[:upstream]
+          opts[:upstream]
+        elsif opts[:continue]
+          newest_pending_branch
+        end
+
 
       # setup a remote branch, if necessary
       wb = wip_branch( topic )
@@ -54,8 +65,8 @@ module GitTopic
       end
 
       # Reset upstream, if specified
-      if opts[:upstream]
-        git "reset --hard #{opts[:upstream]}"
+      if upstream
+        git "reset --hard #{upstream}"
       end
 
       report "Switching branches to work on #{topic}."
