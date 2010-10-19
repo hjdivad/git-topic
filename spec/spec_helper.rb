@@ -162,6 +162,10 @@ def git_head  suffix=nil
   `git rev-parse HEAD#{suffix}`.chomp
 end
 
+def git_remote  branch
+  `git rev-parse #{branch}`.chomp
+end
+
 def git_origin_master
   `git rev-parse origin/master`.chomp
 end

@@ -95,6 +95,9 @@ describe GitTopic do
         git_remote_branches.should_not    include( "rejected/#{@user}/krakens" )
         git_remote_branches.should        include( "wip/#{@user}/krakens" )
         git_head.should                   == '44ffd9c9c8b52b201659e3ad318cdad6ec836b46'
+        git_remote(
+          "wip/#{@user}/krakens"
+        ).should                          == '44ffd9c9c8b52b201659e3ad318cdad6ec836b46'
       end
 
       it "
