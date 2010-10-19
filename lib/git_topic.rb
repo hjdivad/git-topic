@@ -54,14 +54,16 @@ module GitTopic
       ) unless remote_branches.include? "origin/#{wb}"
       # switch to the new branch
       git [ switch_to_branch( wb, "origin/#{wb}" )]
-     
-      # Check for rejected branch
-      rej_branch = rejected_branch( topic )
-      if remote_branches.include? "origin/#{rej_branch}"
-        git [
-          "reset --hard origin/#{rej_branch}",
-          "push origin :refs/heads/#{rej_branch} HEAD:refs/heads/#{wb}",
-        ]
+  
+
+      # Check for rejected or review branch
+      [ rejected_branch( topic ), review_branch( topic ) ].each do |b|
+        if remote_branches.include? "origin/#{b}"
+          git [
+            "reset --hard origin/#{b}",
+            "push origin :refs/heads/#{b} HEAD:refs/heads/#{wb}",
+          ]
+        end
       end
 
       # Reset upstream, if specified

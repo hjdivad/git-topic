@@ -6,6 +6,11 @@
   - 21  git work-on --continue will now assume an <upstream> of the user's
         latest review topic
 
+* other changes
+  -     git work-on <review-topic> will now remove the review branch and reset,
+        just as it does for <rejected-topic>, and as the help documentation
+        claims.
+
 ===   0.2.5
 
 * issues closed

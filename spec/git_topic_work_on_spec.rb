@@ -157,12 +157,12 @@ describe GitTopic do
         exists
       ".oneline do
 
-        git_remote_branches.should        include( "rejected/#{@user}/krakens" )
-        GitTopic.work_on    'krakens'
-        git_branch.should                 == "wip/#{@user}/krakens"
-        git_remote_branches.should_not    include( "rejected/#{@user}/krakens" )
-        git_remote_branches.should        include( "wip/#{@user}/krakens" )
-        git_head.should                   == '44ffd9c9c8b52b201659e3ad318cdad6ec836b46'
+        git_remote_branches.should        include( "review/#{@user}/pirates" )
+        GitTopic.work_on    'pirates'
+        git_branch.should                 == "wip/#{@user}/pirates"
+        git_remote_branches.should_not    include( "review/#{@user}/pirates" )
+        git_remote_branches.should        include( "wip/#{@user}/pirates" )
+        git_head.should                   == 'c0838ed2ee8f2e83c8bda859fc5e332b92f0a5a3'
       end
 
     end
