@@ -4,7 +4,10 @@
   - 15  git review will now attempt to automatically FF rebase.
   - 18  git commands and error now logged.
   - 21  git work-on --continue will now assume an <upstream> of the user's
-        latest review topic
+        latest review topic.
+  - 23  git work-on <topic> will no longer erroneously report the existence of
+        reviewer comments because of comments made to an earlier (and now
+        accepted) topic of the same name.
 
 * other changes
   -     git work-on <review-topic> will now remove the review branch and reset,

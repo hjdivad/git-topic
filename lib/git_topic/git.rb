@@ -50,8 +50,19 @@ module GitTopic::Git
     end
 
     def existing_comments?  branch=current_branch
-      ref = notes_ref( branch )
-      not capture_git( "notes --ref #{ref} list" ).chomp.empty?
+      ref         = notes_ref( branch )
+      # The list of all notes objects, and the commits they annotate, for the
+      # given ref
+      notes_list  = capture_git( "notes --ref #{ref} list" ).split  "\n"
+      # simply checking ! notes_list.empty? tells us that there were some
+      # comments on this ref at some point.  However, they may be comments on
+      # commits from a previous topic with the same name, so we check to ensure
+      # at least one of them is not an ancestor of origin/master (i.e. a commit
+      # that has already been accepted).
+      ! notes_list.find do |pair|
+        commit = pair.split( ' ' ).last
+        ! capture_git( "rev-list -n 1 origin/master..#{commit}" ).chomp.empty?
+      end.nil?
     end
 
     def existing_comments spec=nil

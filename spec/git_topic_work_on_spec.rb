@@ -153,6 +153,21 @@ describe GitTopic do
       end
 
       it "
+        should not report the presence of comments, for comments that belong to
+        commits from an earlier topic branch of the same name
+      ".oneline do
+
+        git_remote_branches.should        include( "rejected/#{@user}/krakens" )
+        refspecs = "origin/rejected/#{@user}/krakens:master :rejected/#{@user}/krakens"
+        system "git push origin #{refspecs} > /dev/null 2> /dev/null"
+        git_remote_branches.should_not    include( "rejected/#{@user}/krakens" )
+
+        GitTopic.work_on    'krakens'
+        git_head.should                   == '331d827fd47fb234af54e3a4bbf8c6705e9116cc'
+        @output.should_not                =~ /comments/
+      end
+
+      it "
         should use (and then destroy) the review branch for the topic, if one
         exists
       ".oneline do
