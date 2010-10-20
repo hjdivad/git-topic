@@ -55,9 +55,16 @@ class String
         original_indentation = $1.size
       end
 
+      # If the line has more than the original indentation, it is ‘indented’
+      # and to be left unformatted
       if line =~ /^\s{#{original_indentation}}\s/
         sbuf << "\n#{indent}" unless start_of_line.call
         sbuf << line.slice( original_indentation, line.size )
+        new_line.call
+        next
+      # Leave line breaks intact to allow paragraph separataion.
+      elsif line.strip.empty?
+        sbuf << "\n"
         new_line.call
         next
       end
@@ -84,7 +91,7 @@ class String
    
     sbuf[ 0...heading.size ] = heading
 
-    sbuf
+    sbuf.rstrip
   end
 
   def wrap!( width, heading_indentation=nil, heading=nil )

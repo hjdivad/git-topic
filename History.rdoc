@@ -15,6 +15,7 @@
   -     git work-on <review-topic> will now remove the review branch and reset,
         just as it does for <rejected-topic>, and as the help documentation
         claims.
+  -     comment formatting in git comment now respects paragraph breaks.
 
 ===   0.2.5
 

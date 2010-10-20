@@ -25,9 +25,30 @@ Spec 123:           I have some general comments, mostly relating to the quality
                     This should take care of our issues with zombies.
 }.strip
 
+FirstCommentMultiParagraph = %Q{
+Spec 123:           I have some general comments, mostly relating to the quality
+                    of our zombie-control policies.  Basically, they're not
+                    working.
+
+./zombies
+
+  Line 2
+    Spec 123:       I suggest we do the following instead:
+                        zombies.each{ |z| reason_with( z )}
+                        zomies.select do |z|
+                          z.unconvinced?
+                        end.each do |z|
+                          destroy z
+                        end
+                    This should take care of our issues with zombies.
+
+                    On another subject entirely, I rather like herring.
+}.strip
+
 FirstCommentUpdated = %Q{
 Spec 123:           I agree, though I wonder if maybe we've become a little too
                     obsessed with bacon. Umm, wait, sorry, wrong thread.
+
                                 There is no way this is going to work.  Sorry, but there's just not.
 
 ./ninjas
@@ -234,6 +255,38 @@ describe GitTopic do
         git_diff.should                                 be_empty
       end
 
+      it "should respect paragraph breaks (double newline) in formatting" do
+        File.open( 'zombies', 'a' ) do |f|
+          f.puts %Q{
+            # I suggest we do the following instead:
+            #     zombies.each{ |z| reason_with( z )}
+            #     zomies.select do |z|
+            #       z.unconvinced?
+            #     end.each do |z|
+            #       destroy z
+            #     end
+            # This should take care of our issues with zombies.
+            #
+            # On another subject entirely, I rather like herring.
+          }.unindent
+        end
+        GitTopic.should_receive( :invoke_git_editor ).once
+        GitTopic.should_receive(
+          :git_author_name_short
+        ).once.and_return( "Spec 123" )
+
+        lambda{ GitTopic.comment }.should_not           raise_error
+        git_notes_list(
+          "refs/notes/reviews/user24601/zombie-basic"
+        ).should_not                                    be_empty
+
+        git_notes_show(
+          "refs/notes/reviews/user24601/zombie-basic"
+        ).should                                        == FirstCommentMultiParagraph
+
+        git_diff.should                                 be_empty
+      end
+
     end
 
 
@@ -281,7 +334,6 @@ describe GitTopic do
         GitTopic.should_receive(
           :git_author_name_short
         ).once.and_return( "Spec 123" )
-
 
         lambda do
           GitTopic.comment  :force_update => true
