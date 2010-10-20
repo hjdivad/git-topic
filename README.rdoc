@@ -1,12 +1,24 @@
 =       git-topic
 
-git-topic is a git command to help with a particular kind of workflow, in which
++git-topic+ is a git command to help with a particular kind of workflow, in which
 all work is written by an author, and reviewed by someone else.
+
+Units of work are organized into _topics_.  Conceptually _topics_ are similar to
+git branches, except that they are namespaced, either in _wip_ (work in
+progress), _review_ or _rejected_.
+
+Authors begin by _working\ on_ a topic.  When they are done, they indicate the
+topic is ready for _review_.  A reviewer then either _accepts_ the topic (merges
+into master) or _rejects_ the topic, usually with comments.
+
+This is all fairly easy to do with policy, e.g. by indicating the state of a
+topic by the name of its branch.  +git-topic+ helps to automate one particular
+policy.
 
 
 =       Requirements
 
-* git-topic has only been tested on debian flavours of linux.  Other unix-like
+* +git-topic+ has only been tested on debian flavours of linux.  Other unix-like
   environments should work.
 * git >= 1.7.1        (older versions may work, sans comment[s] commands)
 * ruby >= 1.9.2-rc1   (older versions may work)
@@ -30,92 +42,11 @@ all work is written by an author, and reviewed by someone else.
 
 1.          Create a local branch from a review branch somebody else pushed.
 2.          Review their work.
-3.  a.i.    Accept; merge (fast-forward) master
-    ii.     Destroy the review branch. 
-    b.      Reject; add notes and push to the rejected namespace and remove from
+3.          either:
+  a.i::     Accept; merge (fast-forward) master
+   ii::     Destroy the review branch. 
+  b::       Reject; add notes and push to the rejected namespace and remove from
             the review namespace.
-
-
-==      Workflow without git-topic
-===     Working on a topic (e.g. feature, or bugfix) foo
-
-    # Create a new branch and switch to it.
-    git checkout -b wip/hal/foo
-
-    # do some work, create lots of temporary commits
-    # when ready to get the code into master, first update so we're rebasing against
-    # the latest code
-    git fetch origin
-
-    # rebase against latest code
-    git rebase --interactive origin/master
-
-    # when done rebasing so wip/hal/foo now has a nice clean commit history, push to
-    # a review branch and destroy the remote wip branch
-    git push origin wip/hal/foo:review/hal/foo  :wip/hal/foo
-
-    # alternatively if you never pushed your wip branch to the remote there's no
-    # need to destroy it, instead only push your local wip branch as a review branch
-    #
-    # git push origin wip/hal/foo:review/hal/foo
-
-
-    # later, after your changes have been merged into master, you can delete your
-    # local branch
-    #
-    # git checkout master
-    # git branch -d wip/hal/foo
-
-
-
-===     Reviewing a  topic (no proposed changes)
-
-    # update origin
-    git fetch origin
-
-    # notice there's a review branch
-    git branch -r
-
-    # create a local branch that tracks the remote review branch
-    git checkout -b review/djh/bar origin/review/djh/bar
-
-    # examine code and examine the local (proposed) commits
-    git log master..
-
-    # when done reviewing, merge into master
-    git checkout master
-    # This should be a fast-forward merge.  If not, it's because something has been
-    # added to master since the rebase
-    git merge review/djh/bar
-    git branch -d review/djh/bar
-
-    # update the new master and destroy the old review branch
-    git push origin master :review/djh/bar
-
-
-
-===     Reviewing a topic (proposed changes)
-
-As above, but if, after examining the code you feel some changes are
-appropriate, you can either:
-
-====    do them yourself and have the other person review and merge
-
-    # do some changes, then destroy the old review branch and make a new one
-    # with the cleaned up code.  Now the owner is changed from djh to hal, so
-    # djh must review and merge into master
-    git push origin review/djh/bar:review/hal/bar :review/djh/bar
-
-====    do some (or no) changes, but with some TODOs for the original author.
-
-    # do your changes on review/djh/bar
-
-    # then update the remote, moving the branch to rejected, indicating the
-    # author has some TODOs left.
-    git push origin review/djh/bar:rejected/djh/bar :review/djh/bar
-
-    # when the author has resolved the TODOs they will move the branch back to
-    # review/djh/bar
 
 
 ==      Workflow with git-topic
@@ -139,8 +70,8 @@ appropriate, you can either:
     git topic accept
 
     # unhappy with the review
-    # edit files to add file-specific comments (see git-topic comment --help for
-    # details).
+    # edit files to add file-specific comments (see +git-topic+ +comment+
+    # +--help+ for details).
    
     # save your file specific comments, and launch an editor to enter general
     # comments about the topic.
@@ -149,14 +80,13 @@ appropriate, you can either:
     # push the topic to rejected.
     git topic reject
 
-==      Again, but with aliases
+===     Again, but with aliases
 
     # first install aliases
     #   add --local if you don't want to update your global aliases
     git topic install-aliases
 
     # alternatively
-    #   git w <topic>
     git work-on <topic>
 
     # see reviewer's comments
@@ -179,18 +109,73 @@ appropriate, you can either:
     git comment
     git reject
 
+
+==      Commenting
+===     Reviewer Comments
+
+When initially rejecting a branch, the reviewer can, and should, write comments
+explaining why the branch was rejected.  These fall into two categories:
++genera+ and +line-specific+ comments.  To make line-specific comments easier,
+the reviewer can add comments directly in source files before invoking +git+
++comment+.
+
+Each line of those annotations should begin with a pound sign.  +git+ +comment+
+will convert these comments into formatted plain text.  Paragraphs are
+automatically formatted, but indented lines are left intact.  So, for instance,
+editing +foo.rb+ from
+
+    def foo
+      x = initial_value_of_x
+      x.change!
+    end
+
+to
+
+    # This is an exciting name for a function, but I fear it is perhaps not as
+    # descriptive as it could be.  And this comment is a little long, but I
+    # think it's to make the point that source comments are automatically
+    # formatted.  In any case, how about
+    #
+    #    def a_much_better_function_name
+    #        excellent_implementation
+    #    end
+    # 
+    def foo
+      x = initial_value_of_x
+      x.change!
+    end
+
+and then invoking +git+ +comment+ will format the above paragraph, annotated
+with +git+ +config+ +user.name+ and wrapped, but leaving the indented lines
+unformatted.
+
+The actual changes to +foo.rb+ will then be discarded.  +git+ +comment+ tries
+hard not to discard non-comment changes and will do nothing if any of the output
+of +git+ +diff+ reports lines that do not meet the above format.
+
+After the diff comments have been applied, +git+ +comment+ will start an
+instance of your +EDITOR+ so you can write general comments.
+
+===     Responding to Comments
+
+The author can view the reviewer's comments with +git+ +comments+, and reply
+with +git+ +comment+.  The latter will start an instance of their +EDITOR+,
+from which replies can be made inline.
+
 ==      Bash autocompletion
 
-See git-topic --completion-help for details.  In short, you have to do some
+See +git-topic+ +--completion-help+ for details.  In short, you have to do some
 manual work, because loading completions as a gem is too slow (see Misc, below,
 and ruby issue 3465[1]).
 
 1.  Make sure you source share/completion.bash __before__ sourcing git's standard
     completion.
 
-2.  Copy bin/git-topic-completion to your gem env's default bin dir, overriding
-    the generated git-topic-completion.  Otherwise, autocompletion will be too
-    slow to be useful.
+2.  Copy +bin/git-topic-completion+ to your gem env's default bin dir,
+    overriding the generated +git-topic-completion+.  Otherwise, autocompletion
+    will be too slow to be useful.
+
+3.  Alternatively, install +git-topic+ with the +--no-wrappers+ flag.
 
 ==      Misc
 
