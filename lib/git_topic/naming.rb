@@ -21,8 +21,13 @@ module GitTopic::Naming
       "rejected/#{user}/#{strip_namespace topic}"
     end
 
-    def review_branch( topic, user=user )
-      "review/#{user}/#{strip_namespace topic}"
+    def review_branch( topic, user=user, opts={} )
+      rb = "review/#{user}/#{strip_namespace topic}"
+      if opts[:remote]
+        "origin/#{rb}"
+      else
+        rb
+      end
     end
 
     def remote_rejected_branch( topic, user=user )

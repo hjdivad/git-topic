@@ -18,8 +18,18 @@ describe GitTopic do
         @output.should_not      be_nil
 
         @output.should_not      =~ /^#\s*pirates\s*$/m
-        @output.should          =~ /^#\s*ninja-basic\s*$/m
-        @output.should          =~ /^#\s*zombie-basic\s*$/m
+        @output.should          =~ /2 topics/m
+        @output.should          =~ /^#\s*ninja-basic\s*/m
+        @output.should          =~ /^#\s*zombie-basic\s*/m
+      end
+
+      it "should show the age of others' unreviewed branches" do
+
+        jul_12 = Date.parse( "12 July 2010" )
+        Date.should_receive(:today).at_least(:once).and_return  jul_12
+        GitTopic.status
+
+        @output.should          =~ /5 days/
       end
 
       it "should not show others' rejected topics" do

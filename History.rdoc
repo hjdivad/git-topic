@@ -9,6 +9,7 @@
         reviewer comments because of comments made to an earlier (and now
         accepted) topic of the same name.
   - 6   git-topic learned abandon [<topic>] command, to delete topics.
+  - 5   git-topic status now shows age of review branches in summary.
 
 * other changes
   -     git work-on <review-topic> will now remove the review branch and reset,

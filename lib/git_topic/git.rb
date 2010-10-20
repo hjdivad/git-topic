@@ -83,6 +83,13 @@ module GitTopic::Git
       capture_git( "name-rev --name-only HEAD" )
     end
 
+    def ref_age ref=current_branch
+      date_str = capture_git  "log #{ref}^..#{ref} --pretty=%aD"
+      return nil if date_str.empty?
+
+      ( Date.today - Date.parse( date_str )).to_i
+    end
+
 
     def display_git_output?
       @@display_git_output ||= false

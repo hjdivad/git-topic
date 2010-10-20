@@ -166,12 +166,17 @@ module GitTopic
       rejected_ut = rb[:rejected]
 
       unless review_ut.empty?
-        prep = review_ut.size == 1 ? "is 1" : "are #{review_ut.size}"
-        sb << "# There #{prep} #{'topic'.pluralize( review_ut.size )} you can review.\n\n"
+        topic_count = review_ut.inject( 0 ){ |a, uts| a + uts.size }
+        prep = topic_count == 1 ? "is 1" : "are #{topic_count}"
+        sb << "# There #{prep} #{'topic'.pluralize( topic_count )} you can review.\n\n"
 
         sb << review_ut.map do |user, topics|
           sb2 = "  from #{user}:\n"
-          sb2 << topics.map{|t| "    #{t}"}.join( "\n" )
+          sb2 << topics.map do |t|
+            age = ref_age( review_branch( t, user, :remote => true ))
+            age_str = " (#{age} days)" if age && age > 0
+            "    #{t}#{age_str}"
+          end.join( "\n" )
           sb2
         end.join( "\n" )
       end
