@@ -33,7 +33,7 @@ module GitTopic
   class << self
 
     # Switch to a branch for the given topic.
-    def work_on( topic, opts={} )
+    def work_on topic, opts={}
       opts.assert_valid_keys  :continue, :upstream, *GlobalOptKeys
       raise "Topic must be specified" if topic.nil?
 
@@ -78,9 +78,39 @@ module GitTopic
     end
 
 
+    # Delete +topic+ locally and remotely.  Defaults to current topic if
+    # unspecified.
+    #
+    def abandon topic=nil, opts={}
+      local_branch =
+        if topic.nil?
+          parts = topic_parts current_branch
+          if parts && parts[:namespace] == "wip" && parts[:user] == user
+            topic = current_topic
+            current_branch
+          else
+            raise "Cannot abandon #{current_branch}."
+          end
+        else
+          wip_branch  topic
+        end
+
+      unless rb = remote_branch( topic, :strip_remote => true )
+        raise "No such topic #{topic}."
+      end
+
+      git [
+        ( "checkout master"           if current_branch == local_branch ),
+        ( "branch -D #{local_branch}" if branches.include? local_branch ),
+        "push origin :#{rb}",
+      ].compact
+
+      report "Topic #{topic} abandoned."
+    end
+
     # Done with the given topic.  If none is specified, then topic is assumed to
     # be the current branch (if it's a topic branch).
-    def done( topic=nil, opts={} )
+    def done  topic=nil, opts={}
       if topic.nil?
         raise "
           Current branch is not a topic branch.  Switch to a topic branch or
@@ -127,7 +157,7 @@ module GitTopic
     #   # 2 of your topics were rejected.
     #   #   dragons
     #   #   liches
-    def status( opts={} )
+    def status  opts={}
       opts.assert_valid_keys  :prepended, :prepended_given, *GlobalOptKeys
 
       sb = ''
@@ -170,7 +200,7 @@ module GitTopic
 
 
     # Switch to a review branch to check somebody else's code.
-    def review( ref=nil, opts={} )
+    def review  ref=nil, opts={}
       rb = remote_branches_organized
       review_branches = rb[:review]
 
@@ -219,7 +249,7 @@ module GitTopic
 
 
     # Accept the branch currently being reviewed.
-    def accept( topic=nil, opts={} )
+    def accept  topic=nil, opts={}
       raise "Must be on a review branch." unless on_review_branch?
       raise "Working tree must be clean" unless working_tree_clean?
       
@@ -253,7 +283,7 @@ module GitTopic
     end
 
 
-    def comment( opts={} )
+    def comment opts={}
       diff_legal = 
         git( "diff --diff-filter=ACDRTUXB --quiet" )          && 
         git( "diff --cached --diff-filter=ACDRTUXB --quiet" )
@@ -311,7 +341,7 @@ module GitTopic
       end
     end
 
-    def comments( spec=nil, opts={} )
+    def comments  spec=nil, opts={}
       args = [ spec ].compact
       if args.empty? && current_branch.nil?
         if guess = guess_branch
@@ -342,7 +372,7 @@ module GitTopic
 
 
     # Reject the branch currently being reviewed.
-    def reject( topic_or_opts=nil, opts={} )
+    def reject  topic_or_opts=nil, opts={}
       if topic_or_opts.is_a? Hash
         topic = nil
         opts = topic_or_opts
@@ -388,7 +418,7 @@ module GitTopic
     #   1. refspecs for origin fetching for review comments.
     #   2. notes.rewriteRef for copying review comments on rebase.
     #
-    def setup( opts={} )
+    def setup opts={}
       cmds = []
 
       cmds <<(
@@ -402,7 +432,7 @@ module GitTopic
       git cmds.compact
     end
 
-    def install_aliases( opts={} )
+    def install_aliases opts={}
       opts.assert_valid_keys  :local, :local_given, *GlobalOptKeys
 
       flags = "--global" unless opts[:local]
@@ -427,7 +457,7 @@ module GitTopic
 
     protected
 
-    def report( success_msg, error_msg=nil )
+    def report  success_msg, error_msg=nil
       if $pstatus && $pstatus.success?
         puts success_msg
       else

@@ -8,6 +8,7 @@
   - 23  git work-on <topic> will no longer erroneously report the existence of
         reviewer comments because of comments made to an earlier (and now
         accepted) topic of the same name.
+  - 6   git-topic learned abandon [<topic>] command, to delete topics.
 
 * other changes
   -     git work-on <review-topic> will now remove the review branch and reset,

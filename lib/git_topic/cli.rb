@@ -11,7 +11,8 @@ require 'git_topic'
 
 module GitTopic
   SubCommands = %w(
-    work-on done status review comment comments accept reject install-aliases
+    work-on done abandon status review comment comments accept reject
+    install-aliases
   )
   Version = lambda {
     h = YAML::load_file( "#{File.dirname( __FILE__ )}/../../VERSION.yml" )
@@ -94,6 +95,12 @@ module GitTopic
             HEAD will default to the current HEAD.
 
             Options:
+          ".unindent
+        when "abandon"
+          banner "
+            git[-topic] abandon [<topic>]
+
+            Deletes <topic> locally and remotely.  Defaults to current topic if unspecified.
           ".unindent
         when /done(-with)?/
           banner "
@@ -244,6 +251,9 @@ module GitTopic
           :upstream       => upstream
         })
         work_on           topic, opts
+      when "abandon"
+        topic             = ARGV.shift
+        abandon           topic
       when /done(-with)?/
         topic             = ARGV.shift
         done              topic, opts

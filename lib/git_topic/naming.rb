@@ -29,15 +29,21 @@ module GitTopic::Naming
       "rejected/#{user}/#{strip_namespace topic}"
     end
 
-    def remote_branch( spec=current_branch )
+    def remote_branch( spec=current_branch, opts={} )
       parts = topic_parts( spec )
 
-      remote_branches.find do |remote_branch|
+      rb = remote_branches.find do |remote_branch|
         bp = topic_parts( remote_branch )
 
         parts.all? do |part, value|
           bp[part] == value
         end
+      end
+
+      if opts[:strip_remote]
+        rb.gsub %r{^origin/}, ''
+      else
+        rb
       end
     end
 
@@ -82,7 +88,7 @@ module GitTopic::Naming
       when 1
         p[:topic] = parts.first
       else
-        raise "Unexpected topic: #{ref}"
+        return nil
       end
 
       if opts[:lookup] && p[:user].nil?
@@ -219,7 +225,7 @@ module GitTopic::Naming
 
   end
 
-  def self.included( base )
+  def self.included base
     base.extend ClassMethods
   end
 end
