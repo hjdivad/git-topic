@@ -96,6 +96,10 @@ module GitTopic
 
             Options:
           ".unindent
+
+          opt   :continue,
+                "Use latest review branch as <upstream>",
+                :default => false
         when "abandon"
           banner "
             git[-topic] abandon [<topic>]

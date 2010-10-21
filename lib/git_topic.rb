@@ -34,7 +34,7 @@ module GitTopic
 
     # Switch to a branch for the given topic.
     def work_on topic, opts={}
-      opts.assert_valid_keys  :continue, :upstream, *GlobalOptKeys
+      opts.assert_valid_keys  :continue, :continue_given, :upstream, *GlobalOptKeys
       raise "Topic must be specified" if topic.nil?
 
       upstream =
