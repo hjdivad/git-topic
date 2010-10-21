@@ -3,5 +3,3 @@
 	filemode = true
 	bare = true
 	sharedrepository = 1
-[receive]
-	denyNonFastforwards = true

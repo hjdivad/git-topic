@@ -163,7 +163,9 @@ def git_head  suffix=nil
 end
 
 def git_remote  branch
-  `git rev-parse #{branch}`.chomp
+  ref = branch
+  ref = "origin/#{ref}" unless ref =~ %r{^origin}
+  `git rev-parse #{ref}`.chomp
 end
 
 def git_origin_master

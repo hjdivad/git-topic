@@ -142,6 +142,22 @@ describe GitTopic do
         ).should                          == '44ffd9c9c8b52b201659e3ad318cdad6ec836b46'
       end
 
+      it "should work when HEAD points to a commit downstream of master" do
+        GitTopic.work_on  'new-topic'
+        dirty_branch!
+        system "git add . && git commit -q -a -m 'Non-FF' "
+
+        git_remote_branches.should        include( "rejected/#{@user}/krakens" )
+        GitTopic.work_on    'krakens'
+        git_branch.should                 == "wip/#{@user}/krakens"
+        git_remote_branches.should_not    include( "rejected/#{@user}/krakens" )
+        git_remote_branches.should        include( "wip/#{@user}/krakens" )
+        git_head.should                   == '44ffd9c9c8b52b201659e3ad318cdad6ec836b46'
+        git_remote(
+          "wip/#{@user}/krakens"
+        ).should                          == '44ffd9c9c8b52b201659e3ad318cdad6ec836b46'
+      end
+
       it "
         should report the presence of comments to the user, when the topic has
         been rejected.

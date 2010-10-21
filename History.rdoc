@@ -2,6 +2,8 @@
 
 * issues closed
   - 28  git comments <my-review-branch> would fail to show any comments.
+  - 25  git work-on <rejected-topic> would fail if done from a HEAD downstream
+        of origin/master, e.g. a different topic.
 
 ===   0.2.6
 

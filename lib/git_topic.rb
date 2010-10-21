@@ -61,7 +61,7 @@ module GitTopic
         if remote_branches.include? "origin/#{b}"
           git [
             "reset --hard origin/#{b}",
-            "push origin :refs/heads/#{b} HEAD:refs/heads/#{wb}",
+            "push origin :refs/heads/#{b} +HEAD:refs/heads/#{wb}",
           ]
         end
       end
