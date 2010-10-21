@@ -187,7 +187,6 @@ module GitTopic::Naming
         namespace_ut[:review]   ||= {}
         namespace_ut[:rejected] ||= {}
 
-        namespace_ut[:review].reject!{|k,v| k == user}
         namespace_ut
       )
     end

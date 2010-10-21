@@ -162,7 +162,8 @@ module GitTopic
 
       sb = ''
       rb = remote_branches_organized
-      review_ut   = rb[:review]
+      # Only others' branche should appear as ‘topics you can review’
+      review_ut   = rb[:review].select{ |u, t| u != user }
       rejected_ut = rb[:rejected]
 
       unless review_ut.empty?

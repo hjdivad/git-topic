@@ -1,3 +1,8 @@
+===   0.2.7
+
+* issues closed
+  - 28  git comments <my-review-branch> would fail to show any comments.
+
 ===   0.2.6
 
 * issues closed

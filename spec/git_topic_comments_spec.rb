@@ -33,6 +33,19 @@ describe GitTopic do
         GitTopic.comments "rejected/#{@user}/krakens"
       end
 
+      it "should list comments for a user's review branches, if requested" do
+        GitTopic.work_on  'krakens'
+        GitTopic.done
+        git_remote_branches.should            include "review/#{@user}/krakens"
+        GitTopic.should_receive( :git ) do |cmd|
+          cmd.should =~ /log/
+          cmd.should =~ %r{origin/master\.\.}
+          cmd.should =~ /--no-standard-notes/
+          cmd.should =~ %r{--show-notes=refs/notes/reviews/#{@user}/krakens}
+        end
+        GitTopic.comments "krakens"
+      end
+
       it "should strip partially qualified namespaces" do
         git_branch.should                     == 'master'
         GitTopic.should_receive( :git ) do |cmd|
