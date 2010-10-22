@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["David J. Hamilton"]
-  s.date = %q{2010-10-21}
+  s.date = %q{2010-10-22}
   s.description = %q{
       gem command around reviewed topic branches.  Supports workflow of the form:
 
@@ -58,7 +58,6 @@ Gem::Specification.new do |s|
      ".vimspell.utf8.add",
      ".vimspell.utf8.add.spl",
      "Gemfile",
-     "Gemfile.lock",
      "History.rdoc",
      "LICENSE",
      "README.rdoc",
@@ -241,7 +240,7 @@ Gem::Specification.new do |s|
     if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.2.0') then
       s.add_runtime_dependency(%q<activesupport>, ["~> 3.0"])
       s.add_runtime_dependency(%q<trollop>, [">= 0"])
-      s.add_runtime_dependency(%q<git-topic>, [">= 0"])
+      s.add_development_dependency(%q<rake>, [">= 0"])
       s.add_development_dependency(%q<jeweler>, [">= 0"])
       s.add_development_dependency(%q<rake>, [">= 0"])
       s.add_development_dependency(%q<rspec>, ["~> 2.0.0"])
@@ -250,10 +249,11 @@ Gem::Specification.new do |s|
       s.add_development_dependency(%q<autotest>, [">= 0"])
       s.add_development_dependency(%q<autotest-screen>, [">= 0"])
       s.add_development_dependency(%q<ruby-debug19>, [">= 0"])
+      s.add_development_dependency(%q<rails>, ["~> 3.0"])
     else
       s.add_dependency(%q<activesupport>, ["~> 3.0"])
       s.add_dependency(%q<trollop>, [">= 0"])
-      s.add_dependency(%q<git-topic>, [">= 0"])
+      s.add_dependency(%q<rake>, [">= 0"])
       s.add_dependency(%q<jeweler>, [">= 0"])
       s.add_dependency(%q<rake>, [">= 0"])
       s.add_dependency(%q<rspec>, ["~> 2.0.0"])
@@ -262,11 +262,12 @@ Gem::Specification.new do |s|
       s.add_dependency(%q<autotest>, [">= 0"])
       s.add_dependency(%q<autotest-screen>, [">= 0"])
       s.add_dependency(%q<ruby-debug19>, [">= 0"])
+      s.add_dependency(%q<rails>, ["~> 3.0"])
     end
   else
     s.add_dependency(%q<activesupport>, ["~> 3.0"])
     s.add_dependency(%q<trollop>, [">= 0"])
-    s.add_dependency(%q<git-topic>, [">= 0"])
+    s.add_dependency(%q<rake>, [">= 0"])
     s.add_dependency(%q<jeweler>, [">= 0"])
     s.add_dependency(%q<rake>, [">= 0"])
     s.add_dependency(%q<rspec>, ["~> 2.0.0"])
@@ -275,6 +276,7 @@ Gem::Specification.new do |s|
     s.add_dependency(%q<autotest>, [">= 0"])
     s.add_dependency(%q<autotest-screen>, [">= 0"])
     s.add_dependency(%q<ruby-debug19>, [">= 0"])
+    s.add_dependency(%q<rails>, ["~> 3.0"])
   end
 end
 

@@ -5,8 +5,6 @@
 # Do not run this file.  It is for developer testing only.  Use bin/git-topic.
 
 require 'rubygems'
-require 'bundler'
-Bundler.setup :runtime, :development
 
 $:.unshift "#{File.dirname(__FILE__)}/lib"
 require 'git_topic'

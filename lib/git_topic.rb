@@ -2,12 +2,6 @@
 # encoding: utf-8
 
 require 'rubygems'
-require 'bundler'
-
-# Work around absurd bundler API
-ENV['BUNDLE_GEMFILE'] = "#{File.dirname __FILE__}/../Gemfile"
-Bundler.setup :runtime
-ENV.delete 'BUNDLE_GEMFILE'
 
 require 'active_support'
 require 'active_support/core_ext/hash/keys'

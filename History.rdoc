@@ -1,3 +1,8 @@
+===   0.2.7.2
+
+* changes
+  -     dropped runtime use of Bundler.
+
 ===   0.2.7.1
 
 * changes
