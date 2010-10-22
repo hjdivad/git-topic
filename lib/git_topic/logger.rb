@@ -1,3 +1,5 @@
+require 'fileutils'
+
 module GitTopic
   class << self; attr_accessor :global_opts end
   self.global_opts = {}
