@@ -23,6 +23,9 @@ group :development do
   gem 'autotest-screen'
 
   gem 'ruby-debug19'
+
+  # Kind of a big dependency just for the source annotation extractor
+  gem 'rails',          '~> 3.0'
 end
 
 
