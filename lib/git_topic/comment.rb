@@ -1,3 +1,4 @@
+# encoding: utf-8
 
 module GitTopic; end
 module GitTopic::Comment
